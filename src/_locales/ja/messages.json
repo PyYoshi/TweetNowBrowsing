@@ -1,0 +1,18 @@
+{
+    "appName": {
+        "message": "Tweet: Now Browsing!",
+        "description": "アプリ名."
+    },
+    "appDescription": {
+        "message": "Share currently viewed page on Twitter.",
+        "description": "アプリの説明."
+    },
+    "invalidTweetErrorMessage": {
+        "message": "おやおや？ 「<%= tweet %>」は不正なツイート文字列のようです. ツイートの長さを確認してください.",
+        "description": "不正なツイート文字列の時に出力されるエラーメッセージ."
+    },
+    "tweetFailedErrorMessage": {
+        "message": "おやおや？ 「<%= tweet %>」の送信に失敗したようです. ",
+        "description": "ツイート送信エラー."
+    }
+}

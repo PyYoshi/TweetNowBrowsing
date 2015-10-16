@@ -1,10 +1,18 @@
 {
     "appName": {
-        "message": "SampleJspmChromeExtension",
+        "message": "Tweet: Now Browsing!",
         "description": "Application name."
     },
     "appDescription": {
-        "message": "Application description.",
+        "message": "Share currently viewed page on Twitter.",
         "description": "Application description."
+    },
+    "invalidTweetErrorMessage": {
+        "message": "Oops! “<%= tweet %>”is invalid tweet. Please check tweet's length.",
+        "description": ""
+    },
+    "tweetFailedErrorMessage": {
+        "message": "Oops! Could not send “<%= tweet %>”.",
+        "description": "sending tweet error."
     }
 }
