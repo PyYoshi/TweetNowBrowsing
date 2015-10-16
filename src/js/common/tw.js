@@ -1,7 +1,7 @@
 'use strict';
 
 import request from 'superagent';
-import twttr from 'twitter-text/twitter-text.js';
+import twttr from 'twitter-text';
 
 import {TWEET_WEB_INTENT_URL, TWEET_API_URL} from 'common/const';
 import {InvalidTweetError, TweetFailedError} from 'common/errors';
@@ -70,20 +70,6 @@ class TwitterWeb {
     }
 
     /**
-     * 指定Elementからui_metricsを取得
-     * @param {Element} twitterHtml TwitterのWebページエレメント.
-     * @return {string|null}
-     */
-    static getUiMetrics(twitterHtml) {
-        let xpathResult = document.evaluate('.//input[@name="ui_metrics"]', twitterHtml, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-        let uiMetricsElement = xpathResult.snapshotItem(0);
-        if (uiMetricsElement !== null) {
-            return uiMetricsElement.value;
-        }
-        return null;
-    }
-
-    /**
      * ついーとが140文字以内に収まっているかチェックを行う.
      * @param {string} tweet ついーとする文章.
      * @return {Object} チェック結果
@@ -97,7 +83,7 @@ class TwitterWeb {
         };
 
         // 文字数をカウント
-        let tweetLength = twttr.txt.getTweetLength(tweet);
+        let tweetLength = twttr.getTweetLength(tweet);
         if (tweetLength === 0) {
             return ret;
         }
@@ -116,23 +102,23 @@ class TwitterWeb {
      * 指定文章をついーとする.
      * @param {string} tweet ついーとする文章.
      * @param {string} authenticityToken authenticity_token.
-     * @param {string} uiMetrics ついーとする文章.
      * @return {Promise<,>} ES6-Promiseオブジェクトを返す.
      */
-    static sendTweet(tweet, authenticityToken, uiMetrics) {
+    static sendTweet(tweet, authenticityToken) {
         return new Promise(function (resolve, reject) {
             let checked = TwitterWeb.checkTweet(tweet);
             let intentURL = TwitterWeb.buildTweetIntentURL(tweet);
             if (checked.isValid) {
                 request.post(TWEET_API_URL)
+                    .type('form')
                     .send({
                         'authenticity_token': authenticityToken,
-                        'ui_metrics': uiMetrics,
                         'status': tweet
                     })
                     .end(
                         (err, res) => {
                             if (err) {
+                                console.log(err);
                                 reject(new TweetFailedError(tweet, err.status, intentURL));
                             } else {
                                 // 送信成功!
