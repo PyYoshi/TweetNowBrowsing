@@ -156,7 +156,8 @@ module.exports = function(grunt) {
                     'System',
                     'mocha',
                     'describe',
-                    'it'
+                    'it',
+                    'XPathResult'
                 ],
                 'ignores': ['src/js/lib/**/*.js']
             },
