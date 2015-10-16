@@ -32,13 +32,13 @@
     "content_scripts": [
         {
             "matches": [
-                "http://*/*",
-                "https://*/*"
+                "http://twitter.com/*",
+                "https://twitter.com/*"
             ],
             "js": [
                 "js/lib/jspm_packages/system.js",
                 "js/lib/jspm.config.js",
-                "js/content_scripts/say_hello/main.js"
+                "js/content_scripts/collect_tiwp/main.js"
             ],
             "run_at": "document_end",
             "all_frames": false
