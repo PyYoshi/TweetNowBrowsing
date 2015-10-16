@@ -1,0 +1,5 @@
+'use strict';
+
+const SEND_MESSAGE_ORDER_SAY_HELLO = 'MSG_ORDER_SAY_HELLO';
+
+export default SEND_MESSAGE_ORDER_SAY_HELLO;

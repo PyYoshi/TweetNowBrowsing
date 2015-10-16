@@ -1,0 +1,10 @@
+{
+    "appName": {
+        "message": "SampleJspmChromeExtension",
+        "description": "Application name."
+    },
+    "appDescription": {
+        "message": "Application description.",
+        "description": "Application description."
+    }
+}

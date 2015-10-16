@@ -1,0 +1,47 @@
+{
+  "name": "sample-jspm-chrome-extension",
+  "version": "0.0.1",
+  "description": "",
+  "main": "Gruntfile.js",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "author": "PyYoshi <myoshi321go@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-babel": "^5.0.3",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-compress": "^0.13.0",
+    "grunt-contrib-connect": "^0.11.2",
+    "grunt-contrib-copy": "^0.8.1",
+    "grunt-contrib-htmlmin": "^0.5.0",
+    "grunt-contrib-imagemin": "^0.9.4",
+    "grunt-contrib-jshint": "^0.11.3",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-jscs": "^2.1.0",
+    "grunt-mocha": "^0.4.13",
+    "grunt-newer": "^1.1.1",
+    "grunt-text-replace": "^0.4.0",
+    "jit-grunt": "^0.9.1",
+    "jspm": "^0.16.12",
+    "rsvp": "^3.1.0",
+    "systemjs-builder": "^0.14.8"
+  },
+  "jspm": {
+    "directories": {
+      "baseURL": "src",
+      "packages": "src/js/lib/jspm_packages"
+    },
+    "configFile": "src/js/lib/jspm.config.js",
+    "dependencies": {
+      "chai": "npm:chai@^3.3.0",
+      "mocha": "npm:mocha@^2.3.3"
+    },
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.8.24",
+      "babel-runtime": "npm:babel-runtime@^5.8.24",
+      "core-js": "npm:core-js@^1.1.4"
+    }
+  }
+}
