@@ -1,5 +1,5 @@
 {
-  "name": "sample-jspm-chrome-extension",
+  "name": "tweet-now-browsing",
   "version": "0.0.1",
   "description": "",
   "main": "Gruntfile.js",
