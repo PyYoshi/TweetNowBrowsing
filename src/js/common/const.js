@@ -1,6 +1,7 @@
 'use strict';
 
 // Twitter関連
+export const TWEET_MAX_LENGTH = 140;
 export const TWITTER_WEB_URL = 'https://twitter.com/';
 export const TWITTER_LOGIN_URL = 'https://twitter.com/login';
 export const TWEET_WEB_INTENT_URL = 'https://twitter.com/intent/tweet'; // query) url, text

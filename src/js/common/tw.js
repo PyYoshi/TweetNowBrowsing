@@ -4,7 +4,7 @@ import request from 'superagent';
 import twttr from 'twitter-text';
 import _ from 'lodash';
 
-import {TWEET_WEB_INTENT_URL, TWEET_API_URL, TWITTER_WEB_URL} from 'common/const';
+import {TWEET_MAX_LENGTH, TWEET_WEB_INTENT_URL, TWEET_API_URL, TWITTER_WEB_URL} from 'common/const';
 import {InvalidTweetError, TweetFailedError} from 'common/errors';
 
 /**
@@ -134,7 +134,7 @@ class TwitterWeb {
      */
     static checkTweet(tweet) {
         let ret = {
-            'remain': 140,
+            'remain': TWEET_MAX_LENGTH,
             'isValid': false,
         };
 
@@ -145,8 +145,8 @@ class TwitterWeb {
         }
 
         // 残り文字数をカウント
-        let remain = 140 - tweetLength;
-        if (remain >= 0 && remain <= 140) {
+        let remain = TWEET_MAX_LENGTH - tweetLength;
+        if (remain >= 0 && remain <= TWEET_MAX_LENGTH) {
             ret.isValid = true;
         }
         ret.remain = remain;
