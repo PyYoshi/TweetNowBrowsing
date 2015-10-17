@@ -43,7 +43,7 @@ class ExtendableError extends Error {
 /**
  * 不正なついーとの時に返すエラー
  */
-class InvalidTweetError extends ExtendableError {
+export class InvalidTweetError extends ExtendableError {
 
     /**
      * @param {String} tweet ついーと
@@ -64,7 +64,7 @@ class InvalidTweetError extends ExtendableError {
 /**
  * ついーと送信が失敗した時に返すエラー
  */
-class TweetFailedError extends ExtendableError {
+export class TweetFailedError extends ExtendableError {
 
     /**
      * @param {String} tweet ついーと
