@@ -12,7 +12,31 @@
         "description": "不正なツイート文字列の時に出力されるエラーメッセージ."
     },
     "tweetFailedErrorMessage": {
-        "message": "おやおや？ 「<%= tweet %>」の送信に失敗したようです. ",
+        "message": "おやおや？ 「<%= tweet %>」の送信に失敗したようです. 自身で投稿する場合はここをクリックしてください.",
         "description": "ツイート送信エラー."
+    },
+    "openTweetWebIntentButton": {
+        "message": "つぶやき用URLを開く",
+        "description": ""
+    },
+    "cancelButton": {
+        "message": "キャンセル",
+        "description": ""
+    },
+    "requiredSignIn": {
+        "message": "Twitterにログインしてください.",
+        "description": ""
+    },
+    "hasBeenPosted": {
+        "message": "ツイートしました！",
+        "description": ""
+    },
+    "nowPosting": {
+        "message": "投稿しています...",
+        "description": ""
+    },
+    "error": {
+        "message": "エラー",
+        "description": ""
     }
 }

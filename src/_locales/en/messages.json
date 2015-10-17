@@ -12,7 +12,31 @@
         "description": ""
     },
     "tweetFailedErrorMessage": {
-        "message": "Oops! Could not send “<%= tweet %>”.",
+        "message": "Oops! Could not send “<%= tweet %>”. Please click here if you want to tweet by oneself.",
         "description": "sending tweet error."
+    },
+    "openTweetWebIntentButton": {
+        "message": "Open the tab for tweet",
+        "description": ""
+    },
+    "cancelButton": {
+        "message": "Cancel",
+        "description": ""
+    },
+    "requiredSignIn": {
+        "message": "Please sign in to Twitter",
+        "description": ""
+    },
+    "hasBeenPosted": {
+        "message": "Your Tweet has been posted!",
+        "description": ""
+    },
+    "nowPosting": {
+        "message": "Now posting...",
+        "description": ""
+    },
+    "error": {
+        "message": "Error",
+        "description": ""
     }
 }
