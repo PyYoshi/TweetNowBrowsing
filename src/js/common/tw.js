@@ -2,8 +2,9 @@
 
 import request from 'superagent';
 import twttr from 'twitter-text';
+import _ from 'lodash';
 
-import {TWEET_WEB_INTENT_URL, TWEET_API_URL} from 'common/const';
+import {TWEET_WEB_INTENT_URL, TWEET_API_URL, TWITTER_WEB_URL} from 'common/const';
 import {InvalidTweetError, TweetFailedError} from 'common/errors';
 
 /**
@@ -20,6 +21,17 @@ class TwitterWeb {
     static buildTweetIntentURL(tweet) {
         let encodedTweet = encodeURIComponent(tweet);
         return TWEET_WEB_INTENT_URL + '?text=' + encodedTweet;
+    }
+
+    /**
+     * ステータスURLを生成
+     * @param {String} スクリーンネーム e.g) taylorswift13
+     * @param {String} Tweet ID
+     * @return {String} URL
+     */
+    static buildTweetStatusURL(screenName, tweetID) {
+        let statusURLCompiled = _.template('https://twitter.com/<%= screenName %>/status/<%= tweetID %>');
+        return statusURLCompiled({'screenName':screenName, 'tweetID':tweetID});
     }
 
     /**
@@ -43,16 +55,60 @@ class TwitterWeb {
     }
 
     /**
+     * Twitter Web ページのHTMLエレメントを取得する
+     * @return {Promise<Element, Error>}
+     */
+    static getTwitterWebHTML() {
+        return new Promise((resolve, reject) => {
+            request.get(TWITTER_WEB_URL).end(
+                (err, res) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        let body = document.createElement('div');
+                        body.innerHTML = res.text;
+                        resolve(body);
+                    }
+                }
+            );
+        });
+    }
+
+    /**
      * ログインチェック
      * @param {Element} twitterHtml TwitterのWebページエレメント.
      * @return {boolean}
      */
     static isLogin(twitterHtml) {
-        let xpathSessionElementLength = document.evaluate('//*[@id="session"]', twitterHtml, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
-        if (xpathSessionElementLength === 1) {
+        let xpathResult = document.evaluate('//*[@id="signout-button"]', twitterHtml, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
+        if (xpathResult.snapshotLength === 1) {
             return true;
         }
         return false;
+    }
+
+    /**
+     * 指定Elementからアカウント情報を取得
+     * @param {Element} twitterHtml TwitterのWebページエレメント.
+     * @return {string|null}
+     */
+    static getAccountInfo(twitterHtml) {
+        let accountInfo = {
+            userID: null,
+            screenName: null
+        };
+        let xpathResult = document.evaluate('//input[@id="current-user-id"]', twitterHtml, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+        let userIDElement = xpathResult.snapshotItem(0);
+        if (userIDElement !== null) {
+            let userID = userIDElement.value;
+            let xpathResult2 = document.evaluate('//div[@data-user-id="'+userID+'"][@data-screen-name]', twitterHtml, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+            let screenNameElement = xpathResult2.snapshotItem(0);
+            if (screenNameElement !== null) {
+                accountInfo.userID = userID;
+                accountInfo.screenName = screenNameElement.dataset.screenName;
+            }
+        }
+        return accountInfo;
     }
 
     /**
@@ -118,7 +174,6 @@ class TwitterWeb {
                     .end(
                         (err, res) => {
                             if (err) {
-                                console.log(err);
                                 reject(new TweetFailedError(tweet, err.status, intentURL));
                             } else {
                                 // 送信成功!
