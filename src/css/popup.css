@@ -1,36 +1,10 @@
-html {
-	-webkit-font-smoothing: antialiased;
-}
-
 body {
 	min-height: 230px;
 	min-width: 480px;
-	font-family: "Roboto", "Helvetica Neue", Helvetica, Arial;
-}
-
-a {
-    text-decoration: none;
-}
-
-a:hover {
-    text-decoration: none;
 }
 
 header {
-	/*background-color: #78909C;*/
 	background-color: #039BE5;
-}
-
-textarea {
-   resize: none;
-}
-
-fieldset {
-	border: none;
-}
-
-i.material-icons {
-	vertical-align: middle;
 }
 
 .header-appbar {

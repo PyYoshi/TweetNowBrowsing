@@ -1,0 +1,27 @@
+html {
+	-webkit-font-smoothing: antialiased;
+}
+
+body {
+	font-family: "Roboto", "Helvetica Neue", Helvetica, Arial;
+}
+
+textarea {
+   resize: none;
+}
+
+fieldset {
+	border: none;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+i.material-icons {
+	vertical-align: middle;
+}
