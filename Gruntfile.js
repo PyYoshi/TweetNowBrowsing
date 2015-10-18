@@ -296,7 +296,7 @@ module.exports = function(grunt) {
 
         Rsvp.Promise.all([
             backgroundBuilder.buildStatic('js/background/app.js', 'dist/js/background/main.js', options),
-            contentScriptsBuilder.buildStatic('js/content_scripts/say_hello/app.js', 'dist/js/content_scripts/say_hello/main.js', options),
+            contentScriptsBuilder.buildStatic('js/content_scripts/collect_tiwp/app.js', 'dist/js/content_scripts/collect_tiwp/main.js', options),
             optionsBuilder.buildStatic('js/options/app.js', 'dist/js/options/main.js', options),
             popupBuilder.buildStatic('js/popup/app.js', 'dist/js/popup/main.js', options),
         ]).then(function() {
