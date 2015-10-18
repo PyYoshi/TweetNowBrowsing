@@ -12,6 +12,7 @@ System.config({
     "background/*": "js/background/*",
     "common/*": "js/common/*",
     "content_scripts/*": "js/content_scripts/*",
+    "options/*": "js/options/*",
     "popup/*": "js/popup/*",
     "test/*": "js/test/*",
     "lib/*": "js/lib/*",
