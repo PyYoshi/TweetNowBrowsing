@@ -96,4 +96,11 @@ $(document).ready(() => {
         chrome.runtime.sendMessage({'order': SEND_MESSAGE_ORDER_TWEET_STATUS, 'status': status});
         window.close();
     });
+
+    // ctrl, windowsキーまたはoptionキーとEnterキーで投稿できるように
+    $('body').keydown((event) => {
+        if ((event.metaKey || event.ctrlKey) && (event.keyCode === 13 || event.keyCode === 10)) {
+            $('#tw-status-btn').trigger('click');
+        }
+    });
 });
