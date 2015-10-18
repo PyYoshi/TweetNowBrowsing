@@ -6,7 +6,6 @@ import {
     CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE,
     CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE_DEFAULT_VALUE
 } from 'common/const';
-import LocalStorage from 'common/localstorage';
 import TwitterWeb from 'common/tw';
 import twttr from 'twitter-text';
 import _ from 'lodash';
