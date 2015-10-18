@@ -2,13 +2,47 @@
 <html>
     <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="css/roboto.css" rel="stylesheet">
+        <link href="css/material-icons.css" rel="stylesheet">
+        <link href="mui/mui.min.css" rel="stylesheet">
         <link href="css/main.css" rel="stylesheet">
+        <title>Tweet Now Browsing!</title>
     </head>
     <body>
-        <h1>'Allo, 'Allo!</h1>
+        <header class="header-shadow header-appbar">
+            <nav class="mui-container-fluid">
+                <table width="100%">
+                    <tr class="mui--appbar-height">
+                        <td>
+                            <span class="appbar-brand">Tweet Now Browsing!</span>
+                        </td>
+                        <td class="mui--text-right">
+                            <div class="open-option-link">
+                                <a id="open-option"><i class="material-icons">settings</i></a>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </nav>
+        </header>
+
+        <div class="mui-container-fluid">
+            <form>
+                <div class="mui-textfield mui-textfield--float-label">
+                    <textarea id="tw-status" required></textarea>
+                    <label id="tw-status-label">What’s happening?</label>
+                </div>
+            </form>
+            <fieldset class="tw-status-submit">
+                <input id="tw-status-counter" class="tw-status-counter" value="140" disabled>
+                <button id="tw-status-btn" type="submit" class="mui-btn mui-btn--raised mui-btn--primary">Tweet</button>
+            </fieldset>
+        </div>
     </body>
 
     <script src='js/lib/jspm_packages/system.js'></script>
     <script src='js/lib/jspm.config.js'></script>
     <script src='js/popup/main.js' defer></script>
+    <script src='mui/mui.min.js' defer></script>
 </html>

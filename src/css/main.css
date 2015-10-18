@@ -1,0 +1,82 @@
+html {
+	-webkit-font-smoothing: antialiased;
+}
+
+body {
+	min-height: 230px;
+	min-width: 480px;
+	font-family: "Roboto", "Helvetica Neue", Helvetica, Arial;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+header {
+	/*background-color: #78909C;*/
+	background-color: #039BE5;
+}
+
+textarea {
+   resize: none;
+}
+
+fieldset {
+	border: none;
+}
+
+i.material-icons {
+	vertical-align: middle;
+}
+
+.header-appbar {
+	margin-bottom: 13px;
+}
+.header-shadow {
+	box-shadow: 0 2px 5px rgba(0,0,0,.26);
+    transition: box-shadow .2s;
+}
+.appbar-brand {
+	font-size: 20px;
+	color: #fff;
+	text-decoration: none;
+}
+
+.tw-status-submit {
+	text-align: right;
+    margin-top: -10px;
+}
+.tw-status-counter {
+	display: inline-block;
+	vertical-align: baseline;
+
+	border: 0;
+	background: #fff;
+	padding: 4px 0;
+    padding-top: 10px;
+	color: #66757f;
+	margin-right: 8px;
+	width: 3em;
+	text-align: right;
+}
+.tw-status-counter.warn {
+	color: #880E4F;
+    font-weight: bold;
+}
+.tw-status-counter.superwarn {
+	color: #D50000;
+    font-weight: bold;
+}
+
+.open-option-link {
+	cursor: pointer;
+}
+.open-option-link a {
+	font-size: 20px;
+	color: #fff;
+	text-decoration: none;
+}
