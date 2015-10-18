@@ -12,26 +12,6 @@ import twttr from 'twitter-text';
 import _ from 'lodash';
 import $ from 'jquery';
 
-/**
- * 投稿するための文章を作成
- * @param {String} ページタイトル
- * @param {String} ページURL
- * @return {String} ついーと
- */
-function createStatus(title, url) {
-    let statusTemplateCompiled = _.template(LocalStorage.get(CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE, CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE_DEFAULT_VALUE));
-
-    let status = statusTemplateCompiled({'title': title, 'url': url});
-    let statusLength = twttr.getTweetLength(status);
-
-    if (statusLength > TWEET_MAX_LENGTH) {
-        let c = TWEET_MAX_LENGTH - statusLength - 1;
-        title = title.slice(0, c) + '…';
-        status = statusTemplateCompiled({'title': title, 'url': url});
-    }
-    return status;
-}
-
 $(document).ready(() => {
     // オプションを開く
     $('#open-option').click(() => {
@@ -77,15 +57,30 @@ $(document).ready(() => {
             if (title === null || !(typeof title === 'string' && title.length > 0)) {
                 title = url;
             }
-            let status = createStatus(title, url);
 
-            // textareaへ入れる
-            let twStatusTextarea = $('#tw-status');
-            twStatusTextarea.focus();
-            twStatusTextarea.removeClass('mui--is-empty');
-            twStatusTextarea.addClass('mui--is-dirty');
-            twStatusTextarea.addClass('mui--is-not-empty');
-            twStatusTextarea.val(status).change();
+            chrome.storage.sync.get(CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE, (object) => {
+                let statusTemplateCompiled = _.template(CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE_DEFAULT_VALUE);
+                if (CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE in object) {
+                    statusTemplateCompiled = _.template(object[CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE]);
+                }
+
+                let status = statusTemplateCompiled({'title': title, 'url': url});
+                let statusLength = twttr.getTweetLength(status);
+
+                if (statusLength > TWEET_MAX_LENGTH) {
+                    let c = TWEET_MAX_LENGTH - statusLength - 1;
+                    title = title.slice(0, c) + '…';
+                    status = statusTemplateCompiled({'title': title, 'url': url});
+                }
+
+                // textareaへ入れる
+                let twStatusTextarea = $('#tw-status');
+                twStatusTextarea.focus();
+                twStatusTextarea.removeClass('mui--is-empty');
+                twStatusTextarea.addClass('mui--is-dirty');
+                twStatusTextarea.addClass('mui--is-not-empty');
+                twStatusTextarea.val(status).change();
+            });
         }
     });
 
