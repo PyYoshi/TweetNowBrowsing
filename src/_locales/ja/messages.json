@@ -8,11 +8,11 @@
         "description": "アプリの説明."
     },
     "invalidTweetErrorMessage": {
-        "message": "おやおや？ 「<%= tweet %>」は不正なツイート文字列のようです. ツイートの長さを確認してください.",
+        "message": "おやおや？ 「<%= tweet %>」は不正なツイート文字列のようです。ツイートの長さを確認してください。",
         "description": "不正なツイート文字列の時に出力されるエラーメッセージ."
     },
     "tweetFailedErrorMessage": {
-        "message": "おやおや？ 「<%= tweet %>」の送信に失敗したようです. 自身で投稿する場合はここをクリックしてください.",
+        "message": "おやおや？ 「<%= tweet %>」の送信に失敗したようです。自身で投稿する場合はここをクリックしてください。",
         "description": "ツイート送信エラー."
     },
     "openTweetWebIntentButton": {
@@ -24,7 +24,7 @@
         "description": ""
     },
     "requiredSignIn": {
-        "message": "Twitterにログインしてください.",
+        "message": "Twitterにログインしてください。",
         "description": ""
     },
     "hasBeenPosted": {
@@ -37,6 +37,14 @@
     },
     "error": {
         "message": "エラー",
+        "description": ""
+    },
+    "whatsHappning": {
+        "message": "いまどうしてる?",
+        "description": ""
+    },
+    "twOver140": {
+        "message": "あなたのツイートは140文字を超えています。140文字以内にまとめてください。",
         "description": ""
     }
 }

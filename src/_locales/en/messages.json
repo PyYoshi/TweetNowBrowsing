@@ -38,5 +38,13 @@
     "error": {
         "message": "Error",
         "description": ""
+    },
+    "whatsHappning": {
+        "message": "What’s happening?",
+        "description": ""
+    },
+    "twOver140": {
+        "message": "Your Tweet was over 140 characters. You'll have to be more clever.",
+        "description": ""
     }
 }
