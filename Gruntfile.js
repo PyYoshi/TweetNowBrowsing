@@ -23,9 +23,9 @@ module.exports = function(grunt) {
                     expand: true,
                     cwd: 'src',
                     src: [
-                        '**/*.js',
-                        '!**/main.js',
-                        '!**/lib/**',
+                        'js/**/*.js',
+                        '!js/**/main.js',
+                        '!js/**/lib/**',
                     ],
                     dest: 'compiled'
                 }]
@@ -42,6 +42,7 @@ module.exports = function(grunt) {
                 src: [
                     '**/*',
                     'css/*',
+                    'mui/*',
                     '!**/background/**',
                     '!**/common/**',
                     '!**/content_scripts/**',
@@ -64,6 +65,7 @@ module.exports = function(grunt) {
                 src: [
                     '_locales/**',
                     'css/**',
+                    'mui/**',
                     'img/**',
                     'manifest.json',
                     'options.html',
@@ -97,6 +99,7 @@ module.exports = function(grunt) {
                 files: [
                     '**/*',
                     'css/*',
+                    'mui/*',
                     '!**/background/**',
                     '!**/common/**',
                     '!**/content_scripts/**',
