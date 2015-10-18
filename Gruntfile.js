@@ -116,6 +116,15 @@ module.exports = function(grunt) {
                     // 'jscs',
                     'jshint'
                 ]
+            },
+            remove: {
+                options: {
+                    event: ['deleted'],
+                    spawn: false,
+                    cwd: 'src'
+                },
+                files: ['**/*'],
+                tasks: ['clean:compiledFile']
             }
         },
 
@@ -247,6 +256,20 @@ module.exports = function(grunt) {
                     src: ['**']
                 }]
             }
+        },
+
+        clean: {
+            compiledFile: {
+                expand: true,
+                cwd: 'compiled',
+                src: ''
+            }
+        },
+    });
+
+    grunt.event.on('watch', function(action, filepath) {
+        if (action === 'deleted') {
+            grunt.config('clean.compiledFile.src', filepath.replace('src\\', ''));
         }
     });
 
