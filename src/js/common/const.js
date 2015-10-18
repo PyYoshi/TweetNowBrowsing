@@ -15,9 +15,11 @@ export const SEND_MESSAGE_ORDER_TWEET_STATUS = 'MSG_TWEET_STATUS';
 // alarm関連
 export const ALARM_ORDER_COLLECT_TIWP = 'ALARM_COLLECT_TWEET_INTENT_WEB_PAGE';
 
+// chrome.storage key関連
+export const CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE = 'postStatusTemplate';
+export const CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE_DEFAULT_VALUE = 'NowBrowsing: ${title}: ${url}';
+
 // localStorage key関連
-export const LOCAL_STORAGE_KEY_POST_STATUS_TEMPLATE = 'postStatusTemplate';
-export const LOCAL_STORAGE_KEY_POST_STATUS_TEMPLATE_DEFAULT_VALUE = 'NowBrowsing: ${title}: ${url}';
 export const LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN = 'authenticity_token';
 export const LOCAL_STORAGE_KEY_PRIVATE_CONFIG_USER_ID = 'user_id';
 export const LOCAL_STORAGE_KEY_PRIVATE_CONFIG_SCREEN_NAME = 'screen_name';

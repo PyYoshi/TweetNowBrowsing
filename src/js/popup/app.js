@@ -3,8 +3,8 @@
 import {
     SEND_MESSAGE_ORDER_TWEET_STATUS,
     TWEET_MAX_LENGTH,
-    LOCAL_STORAGE_KEY_POST_STATUS_TEMPLATE,
-    LOCAL_STORAGE_KEY_POST_STATUS_TEMPLATE_DEFAULT_VALUE
+    CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE,
+    CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE_DEFAULT_VALUE
 } from 'common/const';
 import LocalStorage from 'common/localstorage';
 import TwitterWeb from 'common/tw';
@@ -19,7 +19,7 @@ import $ from 'jquery';
  * @return {String} ついーと
  */
 function createStatus(title, url) {
-    let statusTemplateCompiled = _.template(LocalStorage.get(LOCAL_STORAGE_KEY_POST_STATUS_TEMPLATE, LOCAL_STORAGE_KEY_POST_STATUS_TEMPLATE_DEFAULT_VALUE));
+    let statusTemplateCompiled = _.template(LocalStorage.get(CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE, CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE_DEFAULT_VALUE));
 
     let status = statusTemplateCompiled({'title': title, 'url': url});
     let statusLength = twttr.getTweetLength(status);
