@@ -1,13 +1,73 @@
 <!doctype html>
 <html>
     <head>
-        <link href="css/main.css" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="css/roboto.css" rel="stylesheet">
+        <link href="css/material-icons.css" rel="stylesheet">
+        <link href="mui/mui.min.css" rel="stylesheet">
+        <link href="css/base.css" rel="stylesheet">
+        <link href="css/options.css" rel="stylesheet">
+        <title>Options - Tweet Now Browsing!</title>
     </head>
     <body>
-        <h1>'Allo, 'Allo!</h1>
+        <div class="content-wrapper">
+            <div class="mui-container-fluid">
+                <div class="mui-row">
+                    <div class="mui-col-sm-8 mui-col-sm-offset-2">
+                        <div class="mui-panel">
+                            <div class="mui-row">
+                                <div class="mui-col-md-6 mui-col-md-offset-3">
+                                    <ul class="mui-tabs__bar">
+                                        <li class="mui--is-active"><a data-mui-toggle="tab" data-mui-controls="pane-default-1">Template</a></li>
+                                        <!-- <li><a data-mui-toggle="tab" data-mui-controls="pane-default-2">Hoge</a></li> -->
+                                    </ul>
+
+                                    <div class="mui-tabs__pane mui--is-active" id="pane-default-1">
+                                        <div class="tab-container">
+                                            <div class="ope-btns">
+                                                <div class="ope-btns-inner">
+                                                    <button type="submit" id="reset-btn" class="mui-btn mui-btn--raised mui-btn--accent">Reset</button>
+                                                    <button type="submit" id="preview-btn" class="mui-btn mui-btn--raised">Preview</button>
+                                                    <button type="submit" id="save-btn" class="mui-btn mui-btn--raised mui-btn--primary">Save</button>
+                                                </div>
+                                            </div>
+
+                                            <form class="form-template">
+                                                <div class="mui-textfield mui-textfield--float-label">
+                                                    <textarea id="template-txt" required></textarea>
+                                                    <label>Template Text</label>
+                                                </div>
+                                                <div class="mui-textfield mui-textfield--float-label">
+                                                    <textarea id="preview-txt" disabled></textarea>
+                                                    <label>Preview Text</label>
+                                                </div>
+                                            </form>
+
+                                            <div class="mui--text-black-54 mui--text-caption">Support tags</div>
+                                            <div class="mui--divider-top support-tags-divider"></div>
+                                            <ul class="support-tags">
+                                                <li>${title}: Page title</li>
+                                                <li>${url}: Page URL</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <!-- <div class="mui-tabs__pane" id="pane-default-2">
+                                        <div class="tab-container">
+                                            Pane-2
+                                        </div>
+                                    </div> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <script src='js/lib/jspm_packages/system.js'></script>
         <script src='js/lib/jspm.config.js'></script>
         <script src='js/options/main.js' defer></script>
+        <script src='mui/mui.min.js' defer></script>
     </body>
 </html>

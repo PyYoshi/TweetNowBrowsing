@@ -1,0 +1,34 @@
+body {
+
+}
+
+.content-wrapper {
+    margin-top: 30px;
+}
+
+.tab-container {
+    margin-top: 20px;
+}
+
+.ope-btns {
+    margin-bottom: 10px;
+}
+.ope-btns-inner {
+
+}
+
+.form-template {
+    clear: both;
+}
+
+.support-tags {
+    padding: 0;
+    margin-top: 5px;
+    list-style-type: none
+}
+.support-tags li {
+    font-size: 16px;
+}
+.support-tags-divider {
+    border-top: 1px solid rgba(0,0,0,.25);
+}
