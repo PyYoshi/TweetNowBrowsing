@@ -23,3 +23,7 @@ export const CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE_DEFAULT_VALUE = 'NowBrowsin
 export const LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN = 'authenticity_token';
 export const LOCAL_STORAGE_KEY_PRIVATE_CONFIG_USER_ID = 'user_id';
 export const LOCAL_STORAGE_KEY_PRIVATE_CONFIG_SCREEN_NAME = 'screen_name';
+
+// template
+export const OPTIONS_EXAMPLE_PAGE_TITLE = 'Welcome to Twitter - Login or Sign up';
+export const OPTIONS_EXAMPLE_PAGE_URL = 'https://twitter.com/?lang=en';
