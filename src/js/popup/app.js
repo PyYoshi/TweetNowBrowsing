@@ -61,7 +61,7 @@ $(document).ready(() => {
         });
 
         // 現在アクティブなタブのURLとページタイトルをツイートのステータスとしてエレメントに代入する.
-        chrome.tabs.query({active: true}, (tabs) => {
+        chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
             if (tabs instanceof Array && tabs.length > 0) {
                 let url = tabs[0].url;
                 let title = tabs[0].title;
