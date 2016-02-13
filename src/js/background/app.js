@@ -8,7 +8,10 @@ import {
     ALARM_ORDER_COLLECT_TIWP,
     LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN,
     LOCAL_STORAGE_KEY_PRIVATE_CONFIG_USER_ID,
-    LOCAL_STORAGE_KEY_PRIVATE_CONFIG_SCREEN_NAME
+    LOCAL_STORAGE_KEY_PRIVATE_CONFIG_SCREEN_NAME,
+    CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC,
+    CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC_DEFAULT_VALUE,
+    CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC_DISABLE_VALUE
 } from 'common/const';
 import LocalStorage from 'common/localstorage';
 import TwitterWeb from 'common/tw';
@@ -74,7 +77,7 @@ collectTweetIntentWebPage();
  * ついーとする
  * @param {String} tweet ついーとメッセージ
  */
-function sendTweet(tweet) {
+function sendTweet(tweet, notificationDisplayTimeMSec=3000) {
     let notificationID = new Date().getTime() + '-' + Utility.guid();
     let authenticityToken = LocalStorage.get(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN);
     if (typeof authenticityToken !== 'string') {
@@ -114,64 +117,68 @@ function sendTweet(tweet) {
         });
     } else {
         let tweetPromise = TwitterWeb.sendTweet(tweet, authenticityToken);
-        chrome.notifications.create(
-            notificationID,
-            {
-                'type': 'basic',
-                'iconUrl': '/img/icon-256.png',
-                'title': chrome.i18n.getMessage('nowPosting'),
-                'message': tweet
-            },
-            (_notificationId) => {}
-        );
-        tweetPromise.then((res) => {
-            // 通知: 投稿成功
-            chrome.notifications.update(
+        if (notificationDisplayTimeMSec > CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC_DISABLE_VALUE) {
+            chrome.notifications.create(
                 notificationID,
                 {
                     'type': 'basic',
                     'iconUrl': '/img/icon-256.png',
-                    'title': chrome.i18n.getMessage('hasBeenPosted'),
-                    'message': tweet,
-                    'eventTime': Date.now() + 3000
+                    'title': chrome.i18n.getMessage('nowPosting'),
+                    'message': tweet
                 },
-                (wasUpdated) => {}
+                (_notificationId) => {}
             );
-            chrome.notifications.onClicked.addListener((_notificationID) => {
-                if (_notificationID === notificationID && 'tweet_id' in res.body) {
-                    let url = 'https://twitter.com/intent/favorite?tweet_id=' + res.body.tweet_id;
-                    let screenName = LocalStorage.get(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_SCREEN_NAME);
-                    if (typeof screenName === 'string' && screenName.length > 0) {
-                        url = TwitterWeb.buildTweetStatusURL(screenName, res.body.tweet_id);
+            tweetPromise.then((res) => {
+                // 通知: 投稿成功
+                chrome.notifications.update(
+                    notificationID,
+                    {
+                        'type': 'basic',
+                        'iconUrl': '/img/icon-256.png',
+                        'title': chrome.i18n.getMessage('hasBeenPosted'),
+                        'message': tweet
+                    },
+                    (wasUpdated) => {}
+                );
+                setTimeout(()=>{
+                    chrome.notifications.clear(notificationID);
+                }, notificationDisplayTimeMSec);
+                chrome.notifications.onClicked.addListener((_notificationID) => {
+                    if (_notificationID === notificationID && 'tweet_id' in res.body) {
+                        let url = 'https://twitter.com/intent/favorite?tweet_id=' + res.body.tweet_id;
+                        let screenName = LocalStorage.get(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_SCREEN_NAME);
+                        if (typeof screenName === 'string' && screenName.length > 0) {
+                            url = TwitterWeb.buildTweetStatusURL(screenName, res.body.tweet_id);
+                        }
+                        chrome.tabs.create({
+                            'url': url,
+                            'active': true
+                        });
                     }
-                    chrome.tabs.create({
-                        'url': url,
-                        'active': true
-                    });
-                }
-            });
-        }).catch((err) => {
-            // 通知: 投稿失敗
-            chrome.notifications.update(
-                notificationID,
-                {
-                    'type': 'basic',
-                    'iconUrl': '/img/icon-256.png',
-                    'title': chrome.i18n.getMessage('error'),
-                    'message': err.message,
-                    'priority': 2 // -2 to 2
-                },
-                (wasUpdated) => {}
-            );
+                });
+            }).catch((err) => {
+                // 通知: 投稿失敗
+                chrome.notifications.update(
+                    notificationID,
+                    {
+                        'type': 'basic',
+                        'iconUrl': '/img/icon-256.png',
+                        'title': chrome.i18n.getMessage('error'),
+                        'message': err.message,
+                        'priority': 2 // -2 to 2
+                    },
+                    (wasUpdated) => {}
+                );
 
-            // 通知をクリックしてTweet Web Intentページを開く
-            chrome.notifications.onClicked.addListener((_notificationID) => {
-                if (_notificationID === notificationID) {
-                    err.openWebPage();
-                    chrome.notifications.clear(_notificationID);
-                }
+                // 通知をクリックしてTweet Web Intentページを開く
+                chrome.notifications.onClicked.addListener((_notificationID) => {
+                    if (_notificationID === notificationID) {
+                        err.openWebPage();
+                        chrome.notifications.clear(_notificationID);
+                    }
+                });
             });
-        });
+        }
     }
 }
 
@@ -204,7 +211,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 break;
             case SEND_MESSAGE_ORDER_TWEET_STATUS:
                 if ('status' in request) {
-                    sendTweet(request.status);
+                    chrome.storage.sync.get(
+                        [
+                            CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC
+                        ],
+                        (object) => {
+                            let sec = CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC_DEFAULT_VALUE;
+                            if (CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC in object) {
+                                sec = object[CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC];
+                            }
+                            sendTweet(request.status, sec * 1000);
+                        }
+                    );
                 }
                 break;
             default:
