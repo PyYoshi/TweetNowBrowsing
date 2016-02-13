@@ -4,7 +4,9 @@ import {
     CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE,
     CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE_DEFAULT_VALUE,
     OPTIONS_EXAMPLE_PAGE_TITLE,
-    OPTIONS_EXAMPLE_PAGE_URL
+    OPTIONS_EXAMPLE_PAGE_URL,
+    CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC,
+    CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC_DEFAULT_VALUE
 } from 'common/const';
 import _ from 'lodash';
 import $ from 'jquery';
@@ -21,20 +23,34 @@ function previewTemplate() {
     previewTxtElement.val(previewTxt).change();
 }
 
-function loadTemplate() {
-    chrome.storage.sync.get(CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE, (object) => {
-        let templateTxtElement = $('#template-txt');
-        templateTxtElement.focus();
-        templateTxtElement.removeClass('mui--is-empty');
-        templateTxtElement.addClass('mui--is-dirty');
-        templateTxtElement.addClass('mui--is-not-empty');
-        if (CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE in object) {
-            templateTxtElement.val(object[CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE]).change();
-        } else {
-            templateTxtElement.val(CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE_DEFAULT_VALUE).change();
+function loadConfig() {
+    chrome.storage.sync.get(
+        [
+            CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE,
+            CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC
+        ],
+        (object) => {
+            console.log(object);
+            let templateTxtElement = $('#template-txt');
+            templateTxtElement.focus();
+            templateTxtElement.removeClass('mui--is-empty');
+            templateTxtElement.addClass('mui--is-dirty');
+            templateTxtElement.addClass('mui--is-not-empty');
+            if (CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE in object) {
+                templateTxtElement.val(object[CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE]).change();
+            }  else {
+                templateTxtElement.val(CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE_DEFAULT_VALUE).change();
+            }
+            previewTemplate();
+
+            let notificationDisplayTimeElement = $('#notification-display-time');
+            if (CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC in object) {
+                notificationDisplayTimeElement.val(object[CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC]).change();
+            } else {
+                notificationDisplayTimeElement.val(CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC_DEFAULT_VALUE).change();
+            }
         }
-        previewTemplate();
-    });
+    );
 }
 
 /**
@@ -73,8 +89,22 @@ function resetTemplate() {
     previewTemplate();
 }
 
+function saveNotificationDisplayTime() {
+    let notificationDisplayTime = $('#notification-display-time').val();
+    if (!_.isNumber(notificationDisplayTime)) {
+        if (_.isString(notificationDisplayTime)) {
+            notificationDisplayTime = parseInt(notificationDisplayTime, 10);
+        } else {
+            notificationDisplayTime = CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC_DEFAULT_VALUE;
+        }
+    }
+    let obj = {};
+    obj[CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC] = notificationDisplayTime;
+    chrome.storage.sync.set(obj, () => {});
+}
+
 $(document).ready(() => {
-    loadTemplate();
+    loadConfig();
 
     // リセットボタンのクリック
     $('#reset-btn').click(() => {
@@ -98,5 +128,9 @@ $(document).ready(() => {
         } else {
             $('#save-btn').prop('disabled', true);
         }
+    });
+
+    $("#notification-display-time").change(function () {
+        saveNotificationDisplayTime();
     });
 });
