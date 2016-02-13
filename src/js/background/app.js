@@ -168,6 +168,7 @@ function sendTweet(tweet) {
             chrome.notifications.onClicked.addListener((_notificationID) => {
                 if (_notificationID === notificationID) {
                     err.openWebPage();
+                    chrome.notifications.clear(_notificationID);
                 }
             });
         });
