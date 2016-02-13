@@ -30,7 +30,6 @@ function loadConfig() {
             CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC
         ],
         (object) => {
-            console.log(object);
             let templateTxtElement = $('#template-txt');
             templateTxtElement.focus();
             templateTxtElement.removeClass('mui--is-empty');
