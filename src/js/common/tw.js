@@ -1,7 +1,7 @@
 import twttr from 'twitter-text';
 import template from 'lodash.template';
 
-import { TWEET_MAX_LENGTH, TWEET_WEB_INTENT_URL, TWEET_API_URL, TWITTER_WEB_URL } from './const';
+import { TWEET_WEB_INTENT_URL, TWEET_API_URL, TWITTER_WEB_URL } from './const';
 import { InvalidTweetError, TweetFailedError } from './errors';
 
 /**
@@ -136,23 +136,21 @@ export class TwitterWeb {
    * @property {boolean} isValid 1字以上140字以内に収まっている場合はtrue, それ以外はfalse.
    */
   static checkTweet(tweet) {
-    let ret = {
-      remain: TWEET_MAX_LENGTH,
+    const ret = {
+      remain: twttr.configs.defaults.maxWeightedTweetLength,
       isValid: false
     };
 
-    // 文字数をカウント
-    let tweetLength = twttr.getTweetLength(tweet);
+    // ついーと文字をパース
+    const parsedResult = twttr.parseTweet(tweet);
+
+    // バリデーション
+    const tweetLength = parsedResult.weightedLength;
     if (tweetLength === 0) {
       return ret;
     }
-
-    // 残り文字数をカウント
-    let remain = TWEET_MAX_LENGTH - tweetLength;
-    if (remain >= 0 && remain <= TWEET_MAX_LENGTH) {
-      ret.isValid = true;
-    }
-    ret.remain = remain;
+    ret.remain = twttr.configs.defaults.maxWeightedTweetLength - parsedResult.weightedLength;
+    ret.isValid = parsedResult.valid;
 
     return ret;
   }
