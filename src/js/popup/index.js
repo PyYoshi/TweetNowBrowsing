@@ -15,7 +15,21 @@ import { LocalStorage } from '../common/localstorage';
 import { TwitterWeb } from '../common/tw';
 import twttr from 'twitter-text';
 import template from 'lodash.template';
+import throttle from 'lodash.throttle';
 import $ from 'jquery';
+
+function validateStatus() {
+  let twStatus = $('#tw-status').val();
+  let checkedTweet = TwitterWeb.checkTweet(twStatus);
+  $('#tw-status-counter')
+    .val(checkedTweet.remain)
+    .change();
+  if (checkedTweet.isValid) {
+    $('#tw-status-btn').prop('disabled', false);
+  } else {
+    $('#tw-status-btn').prop('disabled', true);
+  }
+}
 
 $(document).ready(() => {
   let authenticityToken = LocalStorage.get(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN);
@@ -52,18 +66,7 @@ $(document).ready(() => {
     });
 
     // エレメントにあるステータスの更新を検出して残り文字数のカウント・送信ボタンの有効/無効を管理する.
-    $('#tw-status').bind('keyup change paste', () => {
-      let twStatus = $('#tw-status').val();
-      let checkedTweet = TwitterWeb.checkTweet(twStatus);
-      $('#tw-status-counter')
-        .val(checkedTweet.remain)
-        .change();
-      if (checkedTweet.isValid) {
-        $('#tw-status-btn').prop('disabled', false);
-      } else {
-        $('#tw-status-btn').prop('disabled', true);
-      }
-    });
+    $('#tw-status').bind('keyup change paste', throttle(validateStatus, 100));
 
     // 現在アクティブなタブのURLとページタイトルをツイートのステータスとしてエレメントに代入する.
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {

@@ -9,7 +9,7 @@ var webpack = require('webpack'),
 
 var fileExtensions = ['jpg', 'jpeg', 'png', 'gif', 'eot', 'otf', 'svg', 'ttf', 'woff', 'woff2'];
 
-var vendor = ['lodash.isnumber', 'lodash.isstring', 'lodash.template', 'jquery', 'twitter-text'];
+var vendor = ['lodash.isnumber', 'lodash.isstring', 'lodash.template', 'lodash.throttle', 'jquery', 'twitter-text'];
 
 var options = {
   entry: {

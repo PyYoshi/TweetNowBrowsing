@@ -55,6 +55,7 @@
     "lodash.isnumber": "^3.0.3",
     "lodash.isstring": "^4.0.1",
     "lodash.template": "^4.4.0",
+    "lodash.throttle": "^4.1.1",
     "twitter-text": "^2.0.2-rc1"
   }
 }
