@@ -237,19 +237,22 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 // HTTPリクエストを改変する
 // NOTICE: declarativeWebRequestがstableチャンネルでも使えるようになったらEventPageへ切り替える(persistence=false
+// declarativeWebRequestは将来削除されるみたい
+// https://bugs.chromium.org/p/chromium/issues/detail?id=112155#c109
+// https://bugs.chromium.org/p/chromium/issues/detail?id=586636
 chrome.webRequest.onBeforeSendHeaders.addListener(
   (details) => {
-    details.requestHeaders.push({
-      name: 'Referer',
-      value: TWEET_WEB_INTENT_URL
-    });
-    for (let i = 0; i < details.requestHeaders.length; ++i) {
+    for (let i = 0; i < details.requestHeaders.length; i++) {
       if (details.requestHeaders[i].name === 'Origin') {
         // OriginヘッダーがついてるとTwitterに投稿できなかったので外すように
         details.requestHeaders.splice(i, 1);
         break;
       }
     }
+    details.requestHeaders.push({
+      name: 'Referer',
+      value: TWEET_WEB_INTENT_URL
+    });
     return { requestHeaders: details.requestHeaders };
   },
   { urls: [TWEET_API_URL] },
