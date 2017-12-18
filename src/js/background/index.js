@@ -5,7 +5,6 @@ import '../../img/icon-128.png';
 import '../../img/icon-38.png';
 import '../../img/icon-19.png';
 import '../../img/icon-16.png';
-
 import iconOpen from '../../img/ic_open_in_new_black_48dp_2x.png';
 import iconDelete from '../../img/ic_delete_black_48dp_2x.png';
 
@@ -20,7 +19,8 @@ import {
   LOCAL_STORAGE_KEY_PRIVATE_CONFIG_SCREEN_NAME,
   CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC,
   CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC_DEFAULT_VALUE,
-  CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC_DISABLE_VALUE
+  CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC_DISABLE_VALUE,
+  TWEET_WEB_INTENT_URL
 } from '../common/const';
 import { LocalStorage } from '../common/localstorage';
 import { TwitterWeb } from '../common/tw';
@@ -203,7 +203,7 @@ chrome.runtime.onStartup.addListener(() => {
   collectTweetIntentWebPage();
 });
 
-// collectTweetIntentWebPageを定期的に取得
+// collectTweetIntentWebPageを定期的に実行
 chrome.alarms.create(ALARM_ORDER_COLLECT_TIWP, { delayInMinutes: 1, periodInMinutes: 1 });
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === ALARM_ORDER_COLLECT_TIWP) {
@@ -241,7 +241,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
   (details) => {
     details.requestHeaders.push({
       name: 'Referer',
-      value: 'https://twitter.com/intent/tweet'
+      value: TWEET_WEB_INTENT_URL
     });
     for (let i = 0; i < details.requestHeaders.length; ++i) {
       if (details.requestHeaders[i].name === 'Origin') {
