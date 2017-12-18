@@ -2,51 +2,60 @@
   "name": "tweet-now-browsing",
   "version": "0.0.1",
   "description": "",
-  "main": "Gruntfile.js",
-  "scripts": {
-    "test": "grunt test"
-  },
   "author": "PyYoshi <myoshi321go@gmail.com>",
   "license": "MIT",
-  "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-babel": "^5.0.3",
-    "grunt-contrib-clean": "^0.6.0",
-    "grunt-contrib-compress": "^0.13.0",
-    "grunt-contrib-connect": "^0.11.2",
-    "grunt-contrib-copy": "^0.8.1",
-    "grunt-contrib-htmlmin": "^0.5.0",
-    "grunt-contrib-imagemin": "^1.0.0",
-    "grunt-contrib-jshint": "^0.11.3",
-    "grunt-contrib-watch": "^0.6.1",
-    "grunt-jscs": "^2.1.0",
-    "grunt-mocha": "^0.4.13",
-    "grunt-newer": "^1.1.1",
-    "grunt-text-replace": "^0.4.0",
-    "jit-grunt": "^0.9.1",
-    "jspm": "^0.16.12",
-    "rsvp": "^3.1.0",
-    "systemjs-builder": "^0.14.8"
+  "scripts": {
+    "prettier-watch": "onchange 'src/**/*.js' 'utils/**/*.js' '*.js' -- prettier --write {{changed}}",
+    "dev:webserver": "better-npm-run dev:webserver",
+    "dev:build": "better-npm-run dev:build",
+    "start": "run-p dev:webserver prettier-watch",
+    "release:build": "better-npm-run release:build"
   },
-  "jspm": {
-    "directories": {
-      "baseURL": "src",
-      "packages": "src/js/lib/jspm_packages"
+  "betterScripts": {
+    "dev:webserver": {
+      "command": "node utils/webserver.js",
+      "env": {
+        "NODE_ENV": "development",
+        "HOST": "localhost",
+        "PORT": 3000
+      }
     },
-    "configFile": "src/js/lib/jspm.config.js",
-    "dependencies": {
-      "chai": "npm:chai@^3.3.0",
-      "css": "github:systemjs/plugin-css@^0.1.18",
-      "jquery": "npm:jquery@^2.1.4",
-      "lodash": "npm:lodash@^3.10.1",
-      "mocha": "npm:mocha@^2.3.3",
-      "superagent": "npm:superagent@^1.4.0",
-      "twitter-text": "npm:twitter-text@^1.13.2"
+    "dev:build": {
+      "command": "node utils/build.js",
+      "env": {
+        "NODE_ENV": "development"
+      }
     },
-    "devDependencies": {
-      "babel": "npm:babel-core@^5.8.24",
-      "babel-runtime": "npm:babel-runtime@^5.8.24",
-      "core-js": "npm:core-js@^1.1.4"
+    "release:build": {
+      "command": "node utils/build.js",
+      "env": {
+        "NODE_ENV": "production"
+      }
     }
+  },
+  "devDependencies": {
+    "better-npm-run": "^0.1.0",
+    "clean-webpack-plugin": "^0.1.17",
+    "copy-webpack-plugin": "^4.2.0",
+    "css-loader": "^0.28.7",
+    "file-loader": "^1.1.6",
+    "fs-extra": "^5.0.0",
+    "html-loader": "^0.5.1",
+    "html-webpack-plugin": "2.30.1",
+    "npm-run-all": "^4.1.2",
+    "onchange": "^3.3.0",
+    "prettier": "1.9.2",
+    "style-loader": "^0.19.1",
+    "webpack": "3.10.0",
+    "webpack-dev-server": "^2.3.0",
+    "write-file-webpack-plugin": "4.2.0"
+  },
+  "dependencies": {
+    "jquery": "^3.2.1",
+    "lodash.isnumber": "^3.0.3",
+    "lodash.isstring": "^4.0.1",
+    "lodash.template": "^4.4.0",
+    "superagent": "^3.8.2",
+    "twitter-text": "^2.0.2-rc1"
   }
 }

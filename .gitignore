@@ -1,6 +1,5 @@
-/node_modules
-/compiled
-/dist
-/src/js/lib/jspm_packages
-/packages
-/release
+node_modules
+build
+secrets.*.js
+.DS_Store
+.git.old

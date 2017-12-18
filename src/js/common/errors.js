@@ -1,12 +1,9 @@
-'use strict';
-
-import _ from 'lodash';
+import template from 'lodash.template';
 
 /**
  * 拡張可能なエラークラス
  */
 class ExtendableError extends Error {
-
     /**
      * @param {String} message error message
      */
@@ -27,13 +24,13 @@ class ExtendableError extends Error {
      */
     openWebPage(callback = null) {
         let createOption = {
-            'url': this.url,
-            'active': true
+            url: this.url,
+            active: true
         };
         if (callback === null) {
             chrome.tabs.create(createOption);
         } else {
-            chrome.tabs.create(createOption, function(tab){
+            chrome.tabs.create(createOption, function(tab) {
                 callback(tab);
             });
         }
@@ -44,15 +41,14 @@ class ExtendableError extends Error {
  * 不正なついーとの時に返すエラー
  */
 export class InvalidTweetError extends ExtendableError {
-
     /**
      * @param {String} tweet ついーと
      * @param {Number} remain ついーとできる残り文字数
      * @param {String} intentURL Tweet Intent Web URL
      */
     constructor(tweet, remain, intentURL) {
-        let compiled = _.template(chrome.i18n.getMessage('invalidTweetErrorMessage'));
-        let compiledMessage = compiled({'tweet': tweet, 'remain': remain});
+        let compiled = template(chrome.i18n.getMessage('invalidTweetErrorMessage'));
+        let compiledMessage = compiled({ tweet: tweet, remain: remain });
         super(compiledMessage, intentURL);
 
         this.tweet = tweet;
@@ -65,15 +61,14 @@ export class InvalidTweetError extends ExtendableError {
  * ついーと送信が失敗した時に返すエラー
  */
 export class TweetFailedError extends ExtendableError {
-
     /**
      * @param {String} tweet ついーと
      * @param {Number} status ついーとできる残り文字数
      * @param {String} intentURL Tweet Intent Web URL
      */
     constructor(tweet, status, intentURL) {
-        let compiled = _.template(chrome.i18n.getMessage('tweetFailedErrorMessage'));
-        let compiledMessage = compiled({'tweet': tweet});
+        let compiled = template(chrome.i18n.getMessage('tweetFailedErrorMessage'));
+        let compiledMessage = compiled({ tweet: tweet });
         super(compiledMessage, intentURL);
 
         this.tweet = tweet;

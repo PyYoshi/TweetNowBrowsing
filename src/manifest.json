@@ -1,61 +1,56 @@
 {
-    "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQD1+2Yieygk4GXa2mGcl+5j8VFSN6KIOqtNLu0KgZCRGFAK2+YGkzva//uBvfIL6jCWgjvypKEGol9AYQePi4fMqMHnzDEl+4actTu7hiUlZMKIAGq4zmPKqH5JVWmg9uYu69lS6HIPNOvwEeFW3OTgGp3UmJIvM1O9h7Il6Iz35wIDAQAB",
-    "name": "__MSG_appName__",
-    "version": "2.0.3",
-    "manifest_version": 2,
-    "description": "__MSG_appDescription__",
-    "icons": {
-        "16": "img/icon-16.png",
-        "128": "img/icon-128.png"
-    },
-    "default_locale": "en",
-    "background": {
-        "persistent": true,
-        "scripts": [
-            "js/lib/jspm_packages/system.js",
-            "js/lib/jspm.config.js",
-            "js/background/main.js"
-        ]
-    },
-    "browser_action": {
-        "default_icon": {
-            "19": "img/icon-19.png",
-            "38": "img/icon-38.png"
-        },
-        "default_title": "__MSG_appName__",
-        "default_popup": "popup.html"
-    },
-    "options_page": "options.html",
-    "content_scripts": [
-        {
-            "matches": [
-                "*://twitter.com/*"
-            ],
-            "js": [
-                "js/lib/jspm_packages/system.js",
-                "js/lib/jspm.config.js",
-                "js/content_scripts/collect_tiwp/main.js"
-            ],
-            "run_at": "document_end",
-            "all_frames": true
-        }
-    ],
-    "content_security_policy": "script-src 'self' 'unsafe-eval';  object-src 'self'",
-    "permissions": [
-        "alarms",
-        "management",
-        "notifications",
-        "storage",
-        "tabs",
-        "webRequest",
-        "webRequestBlocking",
-        "http://twitter.com/*",
-        "https://twitter.com/*"
-    ],
-    "web_accessible_resources": [
-        "js/lib/*",
-        "js/common/*",
-        "js/content_scripts/*",
-        "img/*"
-    ]
+  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQD1+2Yieygk4GXa2mGcl+5j8VFSN6KIOqtNLu0KgZCRGFAK2+YGkzva//uBvfIL6jCWgjvypKEGol9AYQePi4fMqMHnzDEl+4actTu7hiUlZMKIAGq4zmPKqH5JVWmg9uYu69lS6HIPNOvwEeFW3OTgGp3UmJIvM1O9h7Il6Iz35wIDAQAB",
+  "name": "__MSG_appName__",
+  "version": "2.0.3",
+  "manifest_version": 2,
+  "description": "__MSG_appDescription__",
+  "icons": {
+      "16": "icon-16.png",
+      "128": "icon-128.png"
+  },
+  "default_locale": "en",
+  "background": {
+      "persistent": true,
+      "page": "background.html"
+  },
+  "browser_action": {
+      "default_icon": {
+          "19": "icon-19.png",
+          "38": "icon-38.png"
+      },
+      "default_title": "__MSG_appName__",
+      "default_popup": "popup.html"
+  },
+  "options_page": "options.html",
+  "content_scripts": [
+      {
+          "matches": [
+              "*://twitter.com/*"
+          ],
+          "js": [
+              "vendor.js",
+              "collect_tiwp.js"
+          ],
+          "run_at": "document_end",
+          "all_frames": true
+      }
+  ],
+  "content_security_policy": "script-src 'self' 'unsafe-eval';  object-src 'self'",
+  "permissions": [
+      "alarms",
+      "management",
+      "notifications",
+      "storage",
+      "tabs",
+      "webRequest",
+      "webRequestBlocking",
+      "http://twitter.com/*",
+      "https://twitter.com/*"
+  ],
+  "web_accessible_resources": [
+      "js/lib/*",
+      "js/common/*",
+      "js/content_scripts/*",
+      "img/*"
+  ]
 }

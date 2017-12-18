@@ -1,5 +1,3 @@
-'use strict';
-
 // Twitter関連
 export const TWEET_MAX_LENGTH = 140;
 export const TWITTER_WEB_URL = 'https://twitter.com/';

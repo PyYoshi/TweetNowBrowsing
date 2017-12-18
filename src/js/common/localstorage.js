@@ -1,7 +1,4 @@
-'use strict';
-
-class LocalStorage {
-
+export class LocalStorage {
     /**
      * localStorageから値を取得
      * @param {String} key localStorageのkey
@@ -26,5 +23,3 @@ class LocalStorage {
         window.localStorage[key] = JSON.stringify(value);
     }
 }
-
-export default LocalStorage;

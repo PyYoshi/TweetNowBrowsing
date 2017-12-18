@@ -1,3 +1,0 @@
-0.4.4
-cdn.muicss.com/mui-0.4.4/css/mui.min.css
-cdn.muicss.com/mui-0.4.4/js/mui.min.js
