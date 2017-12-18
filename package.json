@@ -55,7 +55,6 @@
     "lodash.isnumber": "^3.0.3",
     "lodash.isstring": "^4.0.1",
     "lodash.template": "^4.4.0",
-    "superagent": "^3.8.2",
     "twitter-text": "^2.0.2-rc1"
   }
 }

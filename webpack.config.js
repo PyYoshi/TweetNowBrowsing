@@ -9,7 +9,7 @@ var webpack = require('webpack'),
 
 var fileExtensions = ['jpg', 'jpeg', 'png', 'gif', 'eot', 'otf', 'svg', 'ttf', 'woff', 'woff2'];
 
-var vendor = ['lodash.isnumber', 'lodash.isstring', 'lodash.template', 'superagent', 'jquery', 'twitter-text'];
+var vendor = ['lodash.isnumber', 'lodash.isstring', 'lodash.template', 'jquery', 'twitter-text'];
 
 var options = {
   entry: {
@@ -132,16 +132,19 @@ var options = {
       template: path.join(__dirname, 'src', 'popup.html'),
       filename: 'popup.html',
       chunks: ['vendor', 'popup']
+      // minify: true,
     }),
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'src', 'options.html'),
       filename: 'options.html',
       chunks: ['vendor', 'options']
+      // minify: true,
     }),
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'src', 'background.html'),
       filename: 'background.html',
       chunks: ['vendor', 'background']
+      // minify: true,
     }),
     new WriteFilePlugin(),
 

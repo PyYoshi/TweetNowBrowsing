@@ -1,4 +1,3 @@
-import request from 'superagent';
 import twttr from 'twitter-text';
 import template from 'lodash.template';
 
@@ -32,38 +31,25 @@ export class TwitterWeb {
   }
 
   /**
-   * Twitter Web IntentのHTMLエレメントを取得する
-   * @return {Promise<Element, Error>}
-   */
-  static getTweetWebIntentHTML() {
-    return new Promise((resolve, reject) => {
-      request.get(TWEET_WEB_INTENT_URL).end((err, res) => {
-        if (err) {
-          reject(err);
-        } else {
-          let body = document.createElement('div');
-          body.innerHTML = res.text;
-          resolve(body);
-        }
-      });
-    });
-  }
-
-  /**
    * Twitter Web ページのHTMLエレメントを取得する
    * @return {Promise<Element, Error>}
    */
   static getTwitterWebHTML() {
     return new Promise((resolve, reject) => {
-      request.get(TWITTER_WEB_URL).end((err, res) => {
-        if (err) {
+      fetch(TWITTER_WEB_URL, { credentials: 'include' })
+        .then(async (response) => {
+          if (response.ok) {
+            let body = document.createElement('div');
+            const result = await response.text();
+            body.innerHTML = result;
+            resolve(body);
+          } else {
+            reject(new Error('Network response was not ok.'));
+          }
+        })
+        .catch((err) => {
           reject(err);
-        } else {
-          let body = document.createElement('div');
-          body.innerHTML = res.text;
-          resolve(body);
-        }
-      });
+        });
     });
   }
 
@@ -182,20 +168,31 @@ export class TwitterWeb {
       let checked = TwitterWeb.checkTweet(tweet);
       let intentURL = TwitterWeb.buildTweetIntentURL(tweet);
       if (checked.isValid) {
-        request
-          .post(TWEET_API_URL)
-          .type('form')
-          .send({
-            authenticity_token: authenticityToken,
-            status: tweet
-          })
-          .end((err, res) => {
-            if (err) {
-              reject(new TweetFailedError(tweet, err.status, intentURL));
+        const payload = {
+          authenticity_token: authenticityToken,
+          status: tweet
+        };
+        const body = Object.keys(payload)
+          .map((key) => key + '=' + encodeURIComponent(payload[key]))
+          .join('&');
+        fetch(TWEET_API_URL, {
+          method: 'POST',
+          body: body,
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+          },
+          credentials: 'include'
+        })
+          .then(async (response) => {
+            if (response.ok) {
+              const text = await response.text();
+              resolve(text);
             } else {
-              // 送信成功!
-              resolve(res);
+              reject(new TweetFailedError(tweet, err.status, intentURL));
             }
+          })
+          .catch((err) => {
+            reject(err);
           });
       } else {
         // 文字数が規則に満たないのでエラーを返す

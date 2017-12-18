@@ -58,8 +58,7 @@ function initPrivateConfig() {
  * Tweet Intent WebのHTMLを取得しlocalStorageへauthenticity_token,ui_metricsを保存する
  */
 function collectTweetIntentWebPage() {
-  let collectHTMLPromise = TwitterWeb.getTwitterWebHTML();
-  collectHTMLPromise
+  TwitterWeb.getTwitterWebHTML()
     .then((element) => {
       let isLogin = TwitterWeb.isLogin(element);
       renderBadge(isLogin);
@@ -125,7 +124,6 @@ function sendTweet(tweet, notificationDisplayTimeMSec = 3000) {
       }
     });
   } else {
-    let tweetPromise = TwitterWeb.sendTweet(tweet, authenticityToken);
     if (notificationDisplayTimeMSec > CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC_DISABLE_VALUE) {
       chrome.notifications.create(
         notificationID,
@@ -137,7 +135,7 @@ function sendTweet(tweet, notificationDisplayTimeMSec = 3000) {
         },
         (_notificationId) => {}
       );
-      tweetPromise
+      TwitterWeb.sendTweet(tweet, authenticityToken)
         .then((res) => {
           // 通知: 投稿成功
           chrome.notifications.update(
