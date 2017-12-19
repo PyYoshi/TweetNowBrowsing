@@ -1,7 +1,7 @@
 {
   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQD1+2Yieygk4GXa2mGcl+5j8VFSN6KIOqtNLu0KgZCRGFAK2+YGkzva//uBvfIL6jCWgjvypKEGol9AYQePi4fMqMHnzDEl+4actTu7hiUlZMKIAGq4zmPKqH5JVWmg9uYu69lS6HIPNOvwEeFW3OTgGp3UmJIvM1O9h7Il6Iz35wIDAQAB",
   "name": "__MSG_appName__",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "manifest_version": 2,
   "description": "__MSG_appDescription__",
   "icons": {
