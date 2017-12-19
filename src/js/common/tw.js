@@ -149,7 +149,6 @@ export class TwitterWeb {
 
     // ついーと文字をパース
     const parsedResult = twttr.parseTweet(tweet);
-    console.log(parsedResult);
 
     // バリデーション
     const tweetLength = parsedResult.weightedLength;
