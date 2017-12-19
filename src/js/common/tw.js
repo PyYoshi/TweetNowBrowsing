@@ -1,7 +1,13 @@
 import twttr from 'twitter-text';
 import template from 'lodash.template';
 
-import { TWEET_WEB_INTENT_URL, TWEET_API_URL, TWITTER_WEB_URL } from './const';
+import {
+  TWEET_WEB_INTENT_URL,
+  TWEET_API_URL,
+  TWITTER_WEB_URL,
+  STATUS_TEMPLATE_TAG_TITLE,
+  STATUS_TEMPLATE_TAG_URL
+} from './const';
 import { InvalidTweetError, TweetFailedError } from './errors';
 
 /**
@@ -143,6 +149,7 @@ export class TwitterWeb {
 
     // ついーと文字をパース
     const parsedResult = twttr.parseTweet(tweet);
+    console.log(parsedResult);
 
     // バリデーション
     const tweetLength = parsedResult.weightedLength;
@@ -153,6 +160,34 @@ export class TwitterWeb {
     ret.isValid = parsedResult.valid;
 
     return ret;
+  }
+
+  /**
+   * ついーと文字数がオーバーしたら削って収まるようにする
+   * TODO: ぴったし収まるようにしたい
+   * @param {string} title
+   * @param {string} url
+   * @return {string} 加工済みついーと
+   */
+  static normalizeTweet(title, url, templateStr) {
+    const templateFunc = template(templateStr);
+    let status = templateFunc({ title: title, url: url });
+    const parsedResult = twttr.parseTweet(status);
+    if (!parsedResult.valid) {
+      const statusWithoutTitle = templateFunc({ title: '', url: url });
+      const parsedResultWithoutTitle = twttr.parseTweet(statusWithoutTitle);
+      const parsedResultOnlyTitle = twttr.parseTweet(title);
+
+      let titleArr = Array.from(title);
+      titleArr = titleArr.slice(
+        parsedResultOnlyTitle.validRangeStart,
+        parsedResultOnlyTitle.validRangeEnd - parsedResultWithoutTitle.displayRangeEnd - 1
+      );
+      titleArr.push('…');
+      title = titleArr.join('');
+      status = templateFunc({ title: title, url: url });
+    }
+    return status;
   }
 
   /**
