@@ -48,6 +48,7 @@
     "prettier": "1.9.2",
     "rimraf": "^2.6.2",
     "style-loader": "^0.19.1",
+    "uglifyjs-webpack-plugin": "^1.1.4",
     "webpack": "3.10.0",
     "webpack-dev-server": "^2.3.0",
     "write-file-webpack-plugin": "4.2.0"
