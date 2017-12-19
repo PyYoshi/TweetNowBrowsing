@@ -176,13 +176,9 @@ export class TwitterWeb {
     if (!parsedResult.valid) {
       const statusWithoutTitle = templateFunc({ title: '', url: url });
       const parsedResultWithoutTitle = twttr.parseTweet(statusWithoutTitle);
-      const parsedResultOnlyTitle = twttr.parseTweet(title);
 
       let titleArr = Array.from(title);
-      titleArr = titleArr.slice(
-        parsedResultOnlyTitle.validRangeStart,
-        parsedResultOnlyTitle.validRangeEnd - parsedResultWithoutTitle.displayRangeEnd - 1
-      );
+      titleArr = titleArr.slice(0, parsedResult.validRangeEnd - parsedResultWithoutTitle.displayRangeEnd - 2);
       titleArr.push('…');
       title = titleArr.join('');
       status = templateFunc({ title: title, url: url });
