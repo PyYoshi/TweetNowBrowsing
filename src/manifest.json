@@ -47,10 +47,5 @@
       "http://twitter.com/*",
       "https://twitter.com/*"
   ],
-  "web_accessible_resources": [
-      "js/lib/*",
-      "js/common/*",
-      "js/content_scripts/*",
-      "img/*"
-  ]
+  "web_accessible_resources": []
 }
