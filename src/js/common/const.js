@@ -1,5 +1,4 @@
 // Twitter関連
-export const TWEET_MAX_LENGTH = 140;
 export const TWITTER_WEB_URL = 'https://twitter.com/?lang=en';
 export const TWITTER_LOGIN_URL = 'https://twitter.com/login';
 export const TWEET_WEB_INTENT_URL = 'https://twitter.com/intent/tweet'; // query) url, text
@@ -15,7 +14,9 @@ export const ALARM_ORDER_COLLECT_TIWP = 'ALARM_COLLECT_TWEET_INTENT_WEB_PAGE';
 
 // chrome.storage key関連
 export const CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE = 'postStatusTemplate';
-export const CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE_DEFAULT_VALUE = 'NowBrowsing: ${title}: ${url}';
+export const STATUS_TEMPLATE_TAG_TITLE = '${title}';
+export const STATUS_TEMPLATE_TAG_URL = '${url}';
+export const CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE_DEFAULT_VALUE = `NowBrowsing: ${STATUS_TEMPLATE_TAG_TITLE}: ${STATUS_TEMPLATE_TAG_URL}`;
 export const CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC = 'notificationDisplayTimeMSec';
 export const CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC_DEFAULT_VALUE = 3;
 export const CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC_DISABLE_VALUE = -1;

@@ -6,15 +6,12 @@ import '../../css/popup.css';
 import {
   SEND_MESSAGE_ORDER_TWEET_STATUS,
   TWITTER_LOGIN_URL,
-  TWEET_MAX_LENGTH,
   CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE,
   CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE_DEFAULT_VALUE,
   LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN
 } from '../common/const';
 import { LocalStorage } from '../common/localstorage';
 import { TwitterWeb } from '../common/tw';
-import twttr from 'twitter-text';
-import template from 'lodash.template';
 import throttle from 'lodash.throttle';
 import $ from 'jquery';
 
@@ -66,7 +63,7 @@ $(document).ready(() => {
     });
 
     // エレメントにあるステータスの更新を検出して残り文字数のカウント・送信ボタンの有効/無効を管理する.
-    $('#tw-status').bind('keyup change paste', throttle(validateStatus, 100));
+    $('#tw-status').bind('keyup change paste', throttle(validateStatus, 50));
 
     // 現在アクティブなタブのURLとページタイトルをツイートのステータスとしてエレメントに代入する.
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -78,19 +75,15 @@ $(document).ready(() => {
         }
 
         chrome.storage.sync.get(CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE, (object) => {
-          let statusTemplateCompiled = template(CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE_DEFAULT_VALUE);
+          let statusTemplate;
           if (CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE in object) {
-            statusTemplateCompiled = template(object[CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE]);
+            statusTemplate = object[CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE];
+          } else {
+            statusTemplate = CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE_DEFAULT_VALUE;
           }
 
-          let status = statusTemplateCompiled({ title: title, url: url });
-          let statusLength = twttr.getTweetLength(status);
-
-          if (statusLength > TWEET_MAX_LENGTH) {
-            let c = TWEET_MAX_LENGTH - statusLength - 1;
-            title = title.slice(0, c) + '…';
-            status = statusTemplateCompiled({ title: title, url: url });
-          }
+          // ツイートを生成
+          const status = TwitterWeb.normalizeTweet(title, url, statusTemplate);
 
           // textareaへ入れる
           let twStatusTextarea = $('#tw-status');
