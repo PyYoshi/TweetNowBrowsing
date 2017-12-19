@@ -9,7 +9,7 @@
     "dev:webserver": "better-npm-run dev:webserver",
     "dev:build": "better-npm-run dev:build",
     "start": "run-p dev:webserver prettier-watch",
-    "release:build": "better-npm-run release:build"
+    "release": "better-npm-run release:build"
   },
   "betterScripts": {
     "dev:webserver": {
