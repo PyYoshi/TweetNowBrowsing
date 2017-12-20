@@ -1,14 +1,14 @@
-var webpack = require('webpack'),
-  env = require('./env'),
-  config = require('../webpack.config'),
-  fs = require('fs'),
-  path = require('path'),
-  rimraf = require('rimraf'),
-  archiver = require('archiver');
+const webpack = require('webpack');
+const env = require('./env');
+const config = require('../webpack.config');
+const fs = require('fs');
+const path = require('path');
+const rimraf = require('rimraf');
+const archiver = require('archiver');
 
 delete config.chromeExtensionBoilerplate;
 
-webpack(config, function(err) {
+webpack(config, (err) => {
   if (err) {
     throw err;
   }
@@ -26,7 +26,7 @@ webpack(config, function(err) {
         zlib: { level: 9 }
       });
       zip.pipe(output);
-      zip.on('error', function(zipErr) {
+      zip.on('error', (zipErr) => {
         throw zipErr;
       });
 

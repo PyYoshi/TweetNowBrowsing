@@ -1,19 +1,13 @@
 import twttr from 'twitter-text';
 import template from 'lodash.template';
 
-import {
-  TWEET_WEB_INTENT_URL,
-  TWEET_API_URL,
-  TWITTER_WEB_URL,
-  STATUS_TEMPLATE_TAG_TITLE,
-  STATUS_TEMPLATE_TAG_URL
-} from './const';
+import { TWEET_WEB_INTENT_URL, TWEET_API_URL, TWITTER_WEB_URL } from './const';
 import { InvalidTweetError, TweetFailedError } from './errors';
 
 /**
  * Twitterに関わる処理を行うクラス
  */
-export class TwitterWeb {
+export default class TwitterWeb {
   /**
    * Tweet Web Intentページ用URLを生成
    * https://dev.twitter.com/web/tweet-button/web-intent
@@ -21,8 +15,8 @@ export class TwitterWeb {
    * @return {string} URL
    */
   static buildTweetIntentURL(tweet) {
-    let encodedTweet = encodeURIComponent(tweet);
-    return TWEET_WEB_INTENT_URL + '?text=' + encodedTweet;
+    const encodedTweet = encodeURIComponent(tweet);
+    return `${TWEET_WEB_INTENT_URL}?text=${encodedTweet}`;
   }
 
   /**
@@ -32,8 +26,8 @@ export class TwitterWeb {
    * @return {String} URL
    */
   static buildTweetStatusURL(screenName, tweetID) {
-    let statusURLCompiled = template('https://twitter.com/<%= screenName %>/status/<%= tweetID %>');
-    return statusURLCompiled({ screenName: screenName, tweetID: tweetID });
+    const statusURLCompiled = template('https://twitter.com/<%= screenName %>/status/<%= tweetID %>');
+    return statusURLCompiled({ screenName, tweetID });
   }
 
   /**
@@ -45,7 +39,7 @@ export class TwitterWeb {
       fetch(TWITTER_WEB_URL, { credentials: 'include' })
         .then(async (response) => {
           if (response.ok) {
-            let body = document.createElement('div');
+            const body = document.createElement('div');
             const result = await response.text();
             body.innerHTML = result;
             resolve(body);
@@ -65,7 +59,7 @@ export class TwitterWeb {
    * @return {boolean}
    */
   static isLogin(twitterHtml) {
-    let xpathResult = document.evaluate(
+    const xpathResult = document.evaluate(
       '//*[@id="signout-button"]',
       twitterHtml,
       null,
@@ -84,28 +78,28 @@ export class TwitterWeb {
    * @return {string|null}
    */
   static getAccountInfo(twitterHtml) {
-    let accountInfo = {
+    const accountInfo = {
       userID: null,
       screenName: null
     };
-    let xpathResult = document.evaluate(
+    const xpathResult = document.evaluate(
       '//input[@id="current-user-id"]',
       twitterHtml,
       null,
       XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
       null
     );
-    let userIDElement = xpathResult.snapshotItem(0);
+    const userIDElement = xpathResult.snapshotItem(0);
     if (userIDElement !== null) {
-      let userID = userIDElement.value;
-      let xpathResult2 = document.evaluate(
-        '//div[@data-user-id="' + userID + '"][@data-screen-name]',
+      const userID = userIDElement.value;
+      const xpathResult2 = document.evaluate(
+        `//div[@data-user-id="${userID}"][@data-screen-name]`,
         twitterHtml,
         null,
         XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
         null
       );
-      let screenNameElement = xpathResult2.snapshotItem(0);
+      const screenNameElement = xpathResult2.snapshotItem(0);
       if (screenNameElement !== null) {
         accountInfo.userID = userID;
         accountInfo.screenName = screenNameElement.dataset.screenName;
@@ -120,14 +114,14 @@ export class TwitterWeb {
    * @return {string|null}
    */
   static getAuthenticityToken(twitterHtml) {
-    let xpathResult = document.evaluate(
+    const xpathResult = document.evaluate(
       './/input[@name="authenticity_token"]',
       twitterHtml,
       null,
       XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
       null
     );
-    let authenticityTokenElement = xpathResult.snapshotItem(0);
+    const authenticityTokenElement = xpathResult.snapshotItem(0);
     if (authenticityTokenElement !== null) {
       return authenticityTokenElement.value;
     }
@@ -170,17 +164,16 @@ export class TwitterWeb {
    */
   static normalizeTweet(title, url, templateStr) {
     const templateFunc = template(templateStr);
-    let status = templateFunc({ title: title, url: url });
+    let status = templateFunc({ title, url });
     const parsedResult = twttr.parseTweet(status);
     if (!parsedResult.valid) {
-      const statusWithoutTitle = templateFunc({ title: '', url: url });
+      const statusWithoutTitle = templateFunc({ title: '', url });
       const parsedResultWithoutTitle = twttr.parseTweet(statusWithoutTitle);
 
       let titleArr = Array.from(title);
       titleArr = titleArr.slice(0, parsedResult.validRangeEnd - parsedResultWithoutTitle.displayRangeEnd - 2);
       titleArr.push('…');
-      title = titleArr.join('');
-      status = templateFunc({ title: title, url: url });
+      status = templateFunc({ title: titleArr.join(''), url });
     }
     return status;
   }
@@ -192,20 +185,20 @@ export class TwitterWeb {
    * @return {Promise<,>} ES6-Promiseオブジェクトを返す.
    */
   static sendTweet(tweet, authenticityToken) {
-    return new Promise(function(resolve, reject) {
-      let checked = TwitterWeb.checkTweet(tweet);
-      let intentURL = TwitterWeb.buildTweetIntentURL(tweet);
+    return new Promise((resolve, reject) => {
+      const checked = TwitterWeb.checkTweet(tweet);
+      const intentURL = TwitterWeb.buildTweetIntentURL(tweet);
       if (checked.isValid) {
         const payload = {
           authenticity_token: authenticityToken,
           status: tweet
         };
         const body = Object.keys(payload)
-          .map((key) => key + '=' + encodeURIComponent(payload[key]))
+          .map((key) => `${key}=${encodeURIComponent(payload[key])}`)
           .join('&');
         fetch(TWEET_API_URL, {
           method: 'POST',
-          body: body,
+          body,
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
           },
@@ -216,7 +209,7 @@ export class TwitterWeb {
               const text = await response.text();
               resolve(text);
             } else {
-              reject(new TweetFailedError(tweet, err.status, intentURL));
+              reject(new TweetFailedError(tweet, null, intentURL));
             }
           })
           .catch((err) => {

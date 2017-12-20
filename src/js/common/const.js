@@ -14,9 +14,7 @@ export const ALARM_ORDER_COLLECT_TIWP = 'ALARM_COLLECT_TWEET_INTENT_WEB_PAGE';
 
 // chrome.storage key関連
 export const CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE = 'postStatusTemplate';
-export const STATUS_TEMPLATE_TAG_TITLE = '${title}';
-export const STATUS_TEMPLATE_TAG_URL = '${url}';
-export const CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE_DEFAULT_VALUE = `NowBrowsing: ${STATUS_TEMPLATE_TAG_TITLE}: ${STATUS_TEMPLATE_TAG_URL}`;
+export const CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE_DEFAULT_VALUE = 'NowBrowsing: ${title}: ${url}'; // eslint-disable-line no-template-curly-in-string
 export const CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC = 'notificationDisplayTimeMSec';
 export const CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC_DEFAULT_VALUE = 3;
 export const CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC_DISABLE_VALUE = -1;

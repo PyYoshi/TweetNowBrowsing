@@ -10,7 +10,6 @@ import iconDelete from '../../img/ic_delete_black_48dp_2x.png';
 
 import {
   TWEET_API_URL,
-  TWITTER_LOGIN_URL,
   SEND_MESSAGE_ORDER_COLLECT_TIWP,
   SEND_MESSAGE_ORDER_TWEET_STATUS,
   ALARM_ORDER_COLLECT_TIWP,
@@ -22,8 +21,8 @@ import {
   CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC_DISABLE_VALUE,
   TWEET_WEB_INTENT_URL
 } from '../common/const';
-import { LocalStorage } from '../common/localstorage';
-import { TwitterWeb } from '../common/tw';
+import LocalStorage from '../common/localstorage';
+import TwitterWeb from '../common/tw';
 import { guid } from '../common/utility';
 
 /**
@@ -34,14 +33,14 @@ function renderBadge(isLogin) {
   chrome.management.getSelf((result) => {
     let badge = '';
     let color = [65, 131, 196, 255];
-    let title = result.name;
+    const title = result.name;
     if (!isLogin) {
       badge = 'X';
       color = [166, 41, 41, 255];
     }
     chrome.browserAction.setBadgeText({ text: badge });
-    chrome.browserAction.setBadgeBackgroundColor({ color: color });
-    chrome.browserAction.setTitle({ title: title });
+    chrome.browserAction.setBadgeBackgroundColor({ color });
+    chrome.browserAction.setTitle({ title });
   });
 }
 
@@ -60,22 +59,22 @@ function initPrivateConfig() {
 function collectTweetIntentWebPage() {
   TwitterWeb.getTwitterWebHTML()
     .then((element) => {
-      let isLogin = TwitterWeb.isLogin(element);
+      const isLogin = TwitterWeb.isLogin(element);
       renderBadge(isLogin);
       if (isLogin) {
         // HTMLからauthenticity_tokenを取得・保存
-        let authenticityToken = TwitterWeb.getAuthenticityToken(element);
+        const authenticityToken = TwitterWeb.getAuthenticityToken(element);
         LocalStorage.set(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN, authenticityToken);
 
         // HTMLからアカウント情報を取得・保存
-        let accountInfo = TwitterWeb.getAccountInfo(element);
+        const accountInfo = TwitterWeb.getAccountInfo(element);
         LocalStorage.set(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_USER_ID, accountInfo.userID);
         LocalStorage.set(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_SCREEN_NAME, accountInfo.screenName);
       } else {
         initPrivateConfig();
       }
     })
-    .catch((err) => {
+    .catch(() => {
       initPrivateConfig();
     });
 }
@@ -86,8 +85,8 @@ collectTweetIntentWebPage();
  * @param {String} tweet ついーとメッセージ
  */
 function sendTweet(tweet, notificationDisplayTimeMSec = 3000) {
-  let notificationID = new Date().getTime() + '-' + guid();
-  let authenticityToken = LocalStorage.get(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN);
+  const notificationID = `${new Date().getTime()}-${guid()}`;
+  const authenticityToken = LocalStorage.get(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN);
   if (typeof authenticityToken !== 'string') {
     // 通知: ログインしていない / ログインURLを開く
     chrome.notifications.create(
@@ -109,7 +108,7 @@ function sendTweet(tweet, notificationDisplayTimeMSec = 3000) {
           }
         ]
       },
-      (_notificationId) => {}
+      () => {}
     );
     chrome.notifications.onButtonClicked.addListener((_notificationId, buttonIndex) => {
       if (_notificationId === notificationID) {
@@ -123,71 +122,69 @@ function sendTweet(tweet, notificationDisplayTimeMSec = 3000) {
         }
       }
     });
-  } else {
-    if (notificationDisplayTimeMSec > CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC_DISABLE_VALUE) {
-      chrome.notifications.create(
-        notificationID,
-        {
-          type: 'basic',
-          iconUrl: iconApp256,
-          title: chrome.i18n.getMessage('nowPosting'),
-          message: tweet
-        },
-        (_notificationId) => {}
-      );
-      TwitterWeb.sendTweet(tweet, authenticityToken)
-        .then((res) => {
-          // 通知: 投稿成功
-          chrome.notifications.update(
-            notificationID,
-            {
-              type: 'basic',
-              iconUrl: iconApp256,
-              title: chrome.i18n.getMessage('hasBeenPosted'),
-              message: tweet
-            },
-            (wasUpdated) => {}
-          );
-          setTimeout(() => {
-            chrome.notifications.clear(notificationID);
-          }, notificationDisplayTimeMSec);
-          chrome.notifications.onClicked.addListener((_notificationID) => {
-            if (_notificationID === notificationID && 'tweet_id' in res.body) {
-              let url = 'https://twitter.com/intent/favorite?tweet_id=' + res.body.tweet_id;
-              let screenName = LocalStorage.get(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_SCREEN_NAME);
-              if (typeof screenName === 'string' && screenName.length > 0) {
-                url = TwitterWeb.buildTweetStatusURL(screenName, res.body.tweet_id);
-              }
-              chrome.tabs.create({
-                url: url,
-                active: true
-              });
+  } else if (notificationDisplayTimeMSec > CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC_DISABLE_VALUE) {
+    chrome.notifications.create(
+      notificationID,
+      {
+        type: 'basic',
+        iconUrl: iconApp256,
+        title: chrome.i18n.getMessage('nowPosting'),
+        message: tweet
+      },
+      () => {}
+    );
+    TwitterWeb.sendTweet(tweet, authenticityToken)
+      .then((res) => {
+        // 通知: 投稿成功
+        chrome.notifications.update(
+          notificationID,
+          {
+            type: 'basic',
+            iconUrl: iconApp256,
+            title: chrome.i18n.getMessage('hasBeenPosted'),
+            message: tweet
+          },
+          () => {}
+        );
+        setTimeout(() => {
+          chrome.notifications.clear(notificationID);
+        }, notificationDisplayTimeMSec);
+        chrome.notifications.onClicked.addListener((_notificationID) => {
+          if (_notificationID === notificationID && 'tweet_id' in res.body) {
+            let url = `https://twitter.com/intent/favorite?tweet_id=${res.body.tweet_id}`;
+            const screenName = LocalStorage.get(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_SCREEN_NAME);
+            if (typeof screenName === 'string' && screenName.length > 0) {
+              url = TwitterWeb.buildTweetStatusURL(screenName, res.body.tweet_id);
             }
-          });
-        })
-        .catch((err) => {
-          // 通知: 投稿失敗
-          chrome.notifications.update(
-            notificationID,
-            {
-              type: 'basic',
-              iconUrl: iconApp256,
-              title: chrome.i18n.getMessage('error'),
-              message: err.message,
-              priority: 2 // -2 to 2
-            },
-            (wasUpdated) => {}
-          );
-
-          // 通知をクリックしてTweet Web Intentページを開く
-          chrome.notifications.onClicked.addListener((_notificationID) => {
-            if (_notificationID === notificationID) {
-              err.openWebPage();
-              chrome.notifications.clear(_notificationID);
-            }
-          });
+            chrome.tabs.create({
+              url,
+              active: true
+            });
+          }
         });
-    }
+      })
+      .catch((err) => {
+        // 通知: 投稿失敗
+        chrome.notifications.update(
+          notificationID,
+          {
+            type: 'basic',
+            iconUrl: iconApp256,
+            title: chrome.i18n.getMessage('error'),
+            message: err.message,
+            priority: 2 // -2 to 2
+          },
+          () => {}
+        );
+
+        // 通知をクリックしてTweet Web Intentページを開く
+        chrome.notifications.onClicked.addListener((_notificationID) => {
+          if (_notificationID === notificationID) {
+            err.openWebPage();
+            chrome.notifications.clear(_notificationID);
+          }
+        });
+      });
   }
 }
 
@@ -212,7 +209,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 });
 
 // メッセージオブジェクトを処理
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request) => {
   if ('order' in request) {
     switch (request.order) {
       case SEND_MESSAGE_ORDER_COLLECT_TIWP:
@@ -242,7 +239,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 // https://bugs.chromium.org/p/chromium/issues/detail?id=586636
 chrome.webRequest.onBeforeSendHeaders.addListener(
   (details) => {
-    for (let i = 0; i < details.requestHeaders.length; i++) {
+    for (let i = 0; i < details.requestHeaders.length; i += 1) {
       if (details.requestHeaders[i].name === 'Origin') {
         // OriginヘッダーがついてるとTwitterに投稿できなかったので外すように
         details.requestHeaders.splice(i, 1);

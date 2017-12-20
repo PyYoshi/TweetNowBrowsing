@@ -1,7 +1,5 @@
-import '../../css/roboto.css';
-import '../../css/material-icons.css';
-import '../../css/base.css';
-import '../../css/popup.css';
+import throttle from 'lodash.throttle';
+import $ from 'jquery';
 
 import {
   SEND_MESSAGE_ORDER_TWEET_STATUS,
@@ -12,12 +10,15 @@ import {
 } from '../common/const';
 import { LocalStorage } from '../common/localstorage';
 import { TwitterWeb } from '../common/tw';
-import throttle from 'lodash.throttle';
-import $ from 'jquery';
+
+import '../../css/roboto.css';
+import '../../css/material-icons.css';
+import '../../css/base.css';
+import '../../css/popup.css';
 
 function validateStatus() {
-  let twStatus = $('#tw-status').val();
-  let checkedTweet = TwitterWeb.checkTweet(twStatus);
+  const twStatus = $('#tw-status').val();
+  const checkedTweet = TwitterWeb.checkTweet(twStatus);
   $('#tw-status-counter')
     .val(checkedTweet.remain)
     .change();
@@ -29,7 +30,7 @@ function validateStatus() {
 }
 
 $(document).ready(() => {
-  let authenticityToken = LocalStorage.get(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN);
+  const authenticityToken = LocalStorage.get(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN);
   if (authenticityToken === null || !(typeof authenticityToken === 'string' && authenticityToken.length > 0)) {
     // ログインしていない
     chrome.tabs.create({
@@ -40,16 +41,16 @@ $(document).ready(() => {
   } else {
     // オプションを開く
     $('#open-option').click(() => {
-      let url = chrome.extension.getURL('/options.html');
+      const url = chrome.extension.getURL('/options.html');
       chrome.tabs.create({
-        url: url,
+        url,
         active: true
       });
     });
 
     // カウンターの色を残り文字数によって変える
     $('#tw-status-counter').bind('keyup change paste', () => {
-      let remain = Number($('#tw-status-counter').val());
+      const remain = Number($('#tw-status-counter').val());
       if (remain < 0) {
         $('#tw-status-counter').removeClass('warn');
         $('#tw-status-counter').addClass('superwarn');
@@ -68,8 +69,8 @@ $(document).ready(() => {
     // 現在アクティブなタブのURLとページタイトルをツイートのステータスとしてエレメントに代入する.
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (tabs instanceof Array && tabs.length > 0) {
-        let url = tabs[0].url;
-        let title = tabs[0].title;
+        const { url } = tabs[0];
+        let { title } = tabs[0];
         if (title === null || !(typeof title === 'string' && title.length > 0)) {
           title = url;
         }
@@ -86,7 +87,7 @@ $(document).ready(() => {
           const status = TwitterWeb.normalizeTweet(title, url, statusTemplate);
 
           // textareaへ入れる
-          let twStatusTextarea = $('#tw-status');
+          const twStatusTextarea = $('#tw-status');
           twStatusTextarea.focus();
           twStatusTextarea.removeClass('mui--is-empty');
           twStatusTextarea.addClass('mui--is-dirty');
@@ -98,9 +99,9 @@ $(document).ready(() => {
 
     // 送信ボタンがクリックされたらツイートのステータスをbackgroundスクリプトに送信する.
     $('#tw-status-btn').click(() => {
-      let twStatusTextarea = $('#tw-status');
-      let status = twStatusTextarea.val();
-      chrome.runtime.sendMessage({ order: SEND_MESSAGE_ORDER_TWEET_STATUS, status: status });
+      const twStatusTextarea = $('#tw-status');
+      const status = twStatusTextarea.val();
+      chrome.runtime.sendMessage({ order: SEND_MESSAGE_ORDER_TWEET_STATUS, status });
       window.close();
     });
 

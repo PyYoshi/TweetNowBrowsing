@@ -1,20 +1,19 @@
-var webpack = require('webpack'),
-  path = require('path'),
-  fileSystem = require('fs'),
-  env = require('./utils/env'),
-  CleanWebpackPlugin = require('clean-webpack-plugin'),
-  CopyWebpackPlugin = require('copy-webpack-plugin'),
-  HtmlWebpackPlugin = require('html-webpack-plugin'),
-  WriteFilePlugin = require('write-file-webpack-plugin'),
-  UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const webpack = require('webpack');
+const path = require('path');
+const env = require('./utils/env');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const WriteFilePlugin = require('write-file-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
-var fileExtensions = ['jpg', 'jpeg', 'png', 'gif', 'eot', 'otf', 'svg', 'ttf', 'woff', 'woff2'];
+const fileExtensions = ['jpg', 'jpeg', 'png', 'gif', 'eot', 'otf', 'svg', 'ttf', 'woff', 'woff2'];
 
-var vendor = ['lodash.isnumber', 'lodash.isstring', 'lodash.template', 'lodash.throttle', 'jquery', 'twitter-text'];
+const vendor = ['lodash.isnumber', 'lodash.isstring', 'lodash.template', 'lodash.throttle', 'jquery', 'twitter-text'];
 
-var options = {
+const options = {
   entry: {
-    vendor: vendor,
+    vendor,
     popup: path.join(__dirname, 'src', 'js', 'popup', 'index.js'),
     options: path.join(__dirname, 'src', 'js', 'options', 'index.js'),
     background: path.join(__dirname, 'src', 'js', 'background', 'index.js'),
@@ -32,7 +31,7 @@ var options = {
         exclude: /node_modules/
       },
       {
-        test: new RegExp('.(' + fileExtensions.join('|') + ')$'),
+        test: new RegExp(`.(${fileExtensions.join('|')})$`),
         loader: 'file-loader?name=[name].[ext]',
         exclude: /node_modules/
       },
@@ -54,11 +53,11 @@ var options = {
     new CopyWebpackPlugin([
       {
         from: 'src/manifest.json',
-        transform: function(content, path) {
-          var manifestJSON = JSON.parse(content.toString());
+        transform(content) {
+          const manifestJSON = JSON.parse(content.toString());
 
           if (env.NODE_ENV === 'production') {
-            delete manifestJSON['key'];
+            delete manifestJSON.key;
           }
 
           return Buffer.from(JSON.stringify(manifestJSON, null, '  '));
