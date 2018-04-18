@@ -45,7 +45,9 @@
       "webRequest",
       "webRequestBlocking",
       "http://twitter.com/*",
-      "https://twitter.com/*"
+      "https://twitter.com/*",
+      "http://mobile.twitter.com/*",
+      "https://mobile.twitter.com/*"
   ],
   "web_accessible_resources": []
 }
