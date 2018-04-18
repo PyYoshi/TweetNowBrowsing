@@ -6,7 +6,7 @@ export default class LocalStorage {
    * @return {Number|String|Boolean|object|array|null}
    */
   static get(key, defaultValue = null) {
-    const value = window.localStorage[key];
+    const value = window.localStorage.getItem(key);
     if (typeof value === 'undefined') {
       return defaultValue;
     }
@@ -19,6 +19,14 @@ export default class LocalStorage {
    * @param {Number|String|Boolean|object|array}
    */
   static set(key, value) {
-    window.localStorage[key] = JSON.stringify(value);
+    window.localStorage.setItem(key, JSON.stringify(value));
+  }
+
+  /**
+   * localstorageから指定keyのアイテムを削除
+   * @param {String} key localStorageのkey
+   */
+  static delete(key) {
+    window.localStorage.removeItem(key);
   }
 }
