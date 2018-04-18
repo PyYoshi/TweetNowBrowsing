@@ -49,34 +49,26 @@ function initPrivateConfig() {
   LocalStorage.set(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN, null);
 
   // localStorageのアカウント情報を初期化
-  LocalStorage.set(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_USER_ID, null);
+  LocalStorage.delete(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_USER_ID);
   LocalStorage.set(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_SCREEN_NAME, null);
 }
 
 /**
  * Tweet Intent WebのHTMLを取得しlocalStorageへauthenticity_token,ui_metricsを保存する
  */
-function collectTweetIntentWebPage() {
-  TwitterWeb.getTwitterWebHTML()
-    .then((element) => {
-      const isLogin = TwitterWeb.isLogin(element);
-      renderBadge(isLogin);
-      if (isLogin) {
-        // HTMLからauthenticity_tokenを取得・保存
-        const authenticityToken = TwitterWeb.getAuthenticityToken(element);
-        LocalStorage.set(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN, authenticityToken);
-
-        // HTMLからアカウント情報を取得・保存
-        const accountInfo = TwitterWeb.getAccountInfo(element);
-        LocalStorage.set(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_USER_ID, accountInfo.userID);
-        LocalStorage.set(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_SCREEN_NAME, accountInfo.screenName);
-      } else {
-        initPrivateConfig();
-      }
-    })
-    .catch(() => {
+async function collectTweetIntentWebPage() {
+  try {
+    const isLogin = await TwitterWeb.isLogin();
+    if (isLogin) {
+      const userInfo = await TwitterWeb.getUserInfo();
+      LocalStorage.set(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN, userInfo.authenticityToken);
+      LocalStorage.set(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_SCREEN_NAME, userInfo.screenName);
+    } else {
       initPrivateConfig();
-    });
+    }
+  } catch (err) {
+    initPrivateConfig();
+  }
 }
 collectTweetIntentWebPage();
 
@@ -196,24 +188,24 @@ function sendTweet(tweet, notificationDisplayTimeMSec = 3000) {
 
 // ブラウザ起動時に呼ばれる
 // https://developer.chrome.com/extensions/runtime#event-onStartup
-chrome.runtime.onStartup.addListener(() => {
-  collectTweetIntentWebPage();
+chrome.runtime.onStartup.addListener(async () => {
+  await collectTweetIntentWebPage();
 });
 
 // collectTweetIntentWebPageを定期的に実行
 chrome.alarms.create(ALARM_ORDER_COLLECT_TIWP, { delayInMinutes: 1, periodInMinutes: 1 });
-chrome.alarms.onAlarm.addListener((alarm) => {
+chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === ALARM_ORDER_COLLECT_TIWP) {
-    collectTweetIntentWebPage();
+    await collectTweetIntentWebPage();
   }
 });
 
 // メッセージオブジェクトを処理
-chrome.runtime.onMessage.addListener((request) => {
+chrome.runtime.onMessage.addListener(async (request) => {
   if ('order' in request) {
     switch (request.order) {
       case SEND_MESSAGE_ORDER_COLLECT_TIWP:
-        collectTweetIntentWebPage();
+        await collectTweetIntentWebPage();
         break;
       case SEND_MESSAGE_ORDER_TWEET_STATUS:
         if ('status' in request) {

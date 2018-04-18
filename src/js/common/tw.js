@@ -1,7 +1,12 @@
 import twttr from 'twitter-text';
 import template from 'lodash.template';
 
-import { TWEET_WEB_INTENT_URL, TWEET_API_URL, TWITTER_WEB_URL } from './const';
+import {
+  TWEET_WEB_INTENT_URL,
+  TWEET_API_URL,
+  TWITTER_MOBILE_WEB_COMPOSE_URL,
+  TWITTER_MOBILE_WEB_ACCOUNT_URL
+} from './const';
 import { InvalidTweetError, TweetFailedError } from './errors';
 
 /**
@@ -31,101 +36,68 @@ export default class TwitterWeb {
   }
 
   /**
-   * Twitter Web ページのHTMLエレメントを取得する
-   * @return {Promise<Element, Error>}
-   */
-  static getTwitterWebHTML() {
-    return new Promise((resolve, reject) => {
-      fetch(TWITTER_WEB_URL, { credentials: 'include' })
-        .then(async (response) => {
-          if (response.ok) {
-            const body = document.createElement('div');
-            const result = await response.text();
-            body.innerHTML = result;
-            resolve(body);
-          } else {
-            reject(new Error('Network response was not ok.'));
-          }
-        })
-        .catch((err) => {
-          reject(err);
-        });
-    });
-  }
-
-  /**
    * ログインチェック
-   * @param {Element} twitterHtml TwitterのWebページエレメント.
    * @return {boolean}
    */
-  static isLogin(twitterHtml) {
-    const xpathResult = document.evaluate(
-      '//*[@id="signout-button"]',
-      twitterHtml,
-      null,
-      XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
-      null
-    );
-    if (xpathResult.snapshotLength === 1) {
-      return true;
-    }
-    return false;
+  static async isLogin() {
+    const resp = await fetch('https://mobile.twitter.com/compose/tweet', {
+      redirect: 'follow',
+      credentials: 'include'
+    });
+    return !resp.redirected;
   }
 
-  /**
-   * 指定Elementからアカウント情報を取得
-   * @param {Element} twitterHtml TwitterのWebページエレメント.
-   * @return {string|null}
-   */
-  static getAccountInfo(twitterHtml) {
-    const accountInfo = {
-      userID: null,
-      screenName: null
+  static async getUserInfo() {
+    const userInfo = {
+      screenName: null,
+      authenticityToken: null
     };
-    const xpathResult = document.evaluate(
-      '//input[@id="current-user-id"]',
-      twitterHtml,
-      null,
-      XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
-      null
-    );
-    const userIDElement = xpathResult.snapshotItem(0);
-    if (userIDElement !== null) {
-      const userID = userIDElement.value;
-      const xpathResult2 = document.evaluate(
-        `//div[@data-user-id="${userID}"][@data-screen-name]`,
-        twitterHtml,
-        null,
-        XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
-        null
-      );
-      const screenNameElement = xpathResult2.snapshotItem(0);
-      if (screenNameElement !== null) {
-        accountInfo.userID = userID;
-        accountInfo.screenName = screenNameElement.dataset.screenName;
+
+    {
+      const resp = await fetch(TWITTER_MOBILE_WEB_COMPOSE_URL, { credentials: 'include' });
+      if (resp.ok) {
+        const body = document.createElement('div');
+        const result = await resp.text();
+        body.innerHTML = result;
+
+        const authenticityTokenXPathResult = document.evaluate(
+          './/input[@name="authenticity_token"]',
+          body,
+          null,
+          XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
+          null
+        );
+
+        const authenticityTokenElement = authenticityTokenXPathResult.snapshotItem(0);
+        if (authenticityTokenElement !== null) {
+          userInfo.authenticityToken = authenticityTokenElement.value;
+        }
       }
     }
-    return accountInfo;
-  }
 
-  /**
-   * 指定Elementからauthenticity_tokenを取得
-   * @param {Element} twitterHtml TwitterのWebページエレメント.
-   * @return {string|null}
-   */
-  static getAuthenticityToken(twitterHtml) {
-    const xpathResult = document.evaluate(
-      './/input[@name="authenticity_token"]',
-      twitterHtml,
-      null,
-      XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
-      null
-    );
-    const authenticityTokenElement = xpathResult.snapshotItem(0);
-    if (authenticityTokenElement !== null) {
-      return authenticityTokenElement.value;
+    {
+      const resp = await fetch(TWITTER_MOBILE_WEB_ACCOUNT_URL, { credentials: 'include' });
+      if (resp.ok) {
+        const body = document.createElement('div');
+        const result = await resp.text();
+        body.innerHTML = result;
+
+        const screenNameXPathResult = document.evaluate(
+          '//*[@class="username"]/span[@class="screen-name"]',
+          body,
+          null,
+          XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
+          null
+        );
+
+        const screenNameElement = screenNameXPathResult.snapshotItem(0);
+        if (screenNameElement !== null) {
+          userInfo.screenName = screenNameElement.innerText;
+        }
+      }
     }
-    return null;
+
+    return userInfo;
   }
 
   /**
