@@ -76,7 +76,7 @@ export default class TwitterWeb {
     }
 
     {
-      const resp = await fetch(TWITTER_MOBILE_WEB_ACCOUNT_URL, { credentials: 'include' });
+      const resp = await fetch(TWITTER_MOBILE_WEB_ACCOUNT_URL, { credentials: 'include', redirect: 'follow' });
       if (resp.ok) {
         const body = document.createElement('div');
         const result = await resp.text();

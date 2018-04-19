@@ -5,7 +5,7 @@ export const TWEET_WEB_INTENT_URL = 'https://twitter.com/intent/tweet'; // query
 export const TWEET_WEB_INTENT_COMPLETE_PAGE_URL = 'https://twitter.com/intent/tweet/complete'; // query) latest_status_id
 export const TWEET_API_URL = 'https://twitter.com/i/tweet/create'; // require form data) authenticity_token, status
 export const TWITTER_MOBILE_WEB_COMPOSE_URL = 'https://mobile.twitter.com/compose/tweet';
-export const TWITTER_MOBILE_WEB_ACCOUNT_URL = 'https://mobile.twitter.com/account';
+export const TWITTER_MOBILE_WEB_ACCOUNT_URL = 'https://mobile.twitter.com/i/nojs_router?path=/account';
 
 // sendMessage関連
 export const SEND_MESSAGE_ORDER_COLLECT_TIWP = 'MSG_COLLECT_TWEET_INTENT_WEB_PAGE';
