@@ -19,7 +19,6 @@ import {
   CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC,
   CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC_DEFAULT_VALUE,
   CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC_DISABLE_VALUE,
-  TWEET_WEB_INTENT_URL
 } from '../common/const';
 import LocalStorage from '../common/localstorage';
 import TwitterWeb from '../common/tw';
@@ -239,19 +238,35 @@ chrome.runtime.onMessage.addListener((request) => {
 // https://bugs.chromium.org/p/chromium/issues/detail?id=586636
 chrome.webRequest.onBeforeSendHeaders.addListener(
   (details) => {
-    for (let i = 0; i < details.requestHeaders.length; i += 1) {
+    let hasReferer = false;
+    for (let i = 0; i < details.requestHeaders.length; i++) {
       if (details.requestHeaders[i].name === 'Origin') {
         // OriginヘッダーがついてるとTwitterに投稿できなかったので外すように
         details.requestHeaders.splice(i, 1);
-        break;
+      }
+      if (details.requestHeaders[i].name === 'Referer') {
+        hasReferer = true;
+      }
+
+      if (details.requestHeaders[i].name === 'Cookie') {
+        if (details.initiator === 'chrome-extension://glepgipoohhiadcmcaajmkfniihojnea') {
+          details.requestHeaders[i].value = `${details.requestHeaders[i].value};csrf_same_site=1;`;
+        }
       }
     }
-    details.requestHeaders.push({
-      name: 'Referer',
-      value: TWEET_WEB_INTENT_URL
-    });
+
+    if (!hasReferer) {
+      details.requestHeaders.push({
+        name: 'Referer',
+        value: details.url
+      });
+      details.requestHeaders.push({
+        name: 'upgrade-insecure-requests',
+        value: '1'
+      });
+    }
     return { requestHeaders: details.requestHeaders };
   },
-  { urls: [TWEET_API_URL] },
+  { urls: ['https://twitter.com/*'] },
   ['blocking', 'requestHeaders']
 );
