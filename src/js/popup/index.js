@@ -8,8 +8,8 @@ import {
   CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE_DEFAULT_VALUE,
   LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN
 } from '../common/const';
-import LocalStorage from '../common/localstorage';
-import TwitterWeb from '../common/tw';
+import { LocalStorage } from '../common/localstorage';
+import { TwitterWeb } from '../common/tw';
 
 import '../../css/roboto.css';
 import '../../css/material-icons.css';
