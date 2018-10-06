@@ -9,7 +9,6 @@ import iconOpen from '../../img/ic_open_in_new_black_48dp_2x.png';
 import iconDelete from '../../img/ic_delete_black_48dp_2x.png';
 
 import {
-  TWEET_API_URL,
   SEND_MESSAGE_ORDER_COLLECT_TIWP,
   SEND_MESSAGE_ORDER_TWEET_STATUS,
   ALARM_ORDER_COLLECT_TIWP,
@@ -18,11 +17,51 @@ import {
   LOCAL_STORAGE_KEY_PRIVATE_CONFIG_SCREEN_NAME,
   CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC,
   CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC_DEFAULT_VALUE,
-  CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC_DISABLE_VALUE,
+  CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC_DISABLE_VALUE
 } from '../common/const';
 import LocalStorage from '../common/localstorage';
 import TwitterWeb from '../common/tw';
 import { guid } from '../common/utility';
+
+// HTTPリクエストを改変する
+// NOTICE: declarativeWebRequestがstableチャンネルでも使えるようになったらEventPageへ切り替える(persistence=false
+// declarativeWebRequestは将来削除されるみたい
+// https://bugs.chromium.org/p/chromium/issues/detail?id=112155#c109
+// https://bugs.chromium.org/p/chromium/issues/detail?id=586636
+chrome.webRequest.onBeforeSendHeaders.addListener(
+  (details) => {
+    let hasReferer = false;
+    for (let i = 0; i < details.requestHeaders.length; i++) {
+      if (details.requestHeaders[i].name === 'Origin') {
+        // OriginヘッダーがついてるとTwitterに投稿できなかったので外すように
+        details.requestHeaders.splice(i, 1);
+      }
+      if (details.requestHeaders[i].name === 'Referer') {
+        hasReferer = true;
+      }
+
+      if (details.requestHeaders[i].name === 'Cookie') {
+        if (details.initiator === 'chrome-extension://glepgipoohhiadcmcaajmkfniihojnea') {
+          details.requestHeaders[i].value = `${details.requestHeaders[i].value};csrf_same_site=1;`;
+        }
+      }
+    }
+
+    if (!hasReferer) {
+      details.requestHeaders.push({
+        name: 'Referer',
+        value: details.url
+      });
+      details.requestHeaders.push({
+        name: 'upgrade-insecure-requests',
+        value: '1'
+      });
+    }
+    return { requestHeaders: details.requestHeaders };
+  },
+  { urls: ['https://twitter.com/*'] },
+  ['blocking', 'requestHeaders']
+);
 
 /**
  * Badgeを描画する.
@@ -77,7 +116,6 @@ function collectTweetIntentWebPage() {
       initPrivateConfig();
     });
 }
-collectTweetIntentWebPage();
 
 /**
  * ついーとする
@@ -231,42 +269,4 @@ chrome.runtime.onMessage.addListener((request) => {
   }
 });
 
-// HTTPリクエストを改変する
-// NOTICE: declarativeWebRequestがstableチャンネルでも使えるようになったらEventPageへ切り替える(persistence=false
-// declarativeWebRequestは将来削除されるみたい
-// https://bugs.chromium.org/p/chromium/issues/detail?id=112155#c109
-// https://bugs.chromium.org/p/chromium/issues/detail?id=586636
-chrome.webRequest.onBeforeSendHeaders.addListener(
-  (details) => {
-    let hasReferer = false;
-    for (let i = 0; i < details.requestHeaders.length; i++) {
-      if (details.requestHeaders[i].name === 'Origin') {
-        // OriginヘッダーがついてるとTwitterに投稿できなかったので外すように
-        details.requestHeaders.splice(i, 1);
-      }
-      if (details.requestHeaders[i].name === 'Referer') {
-        hasReferer = true;
-      }
-
-      if (details.requestHeaders[i].name === 'Cookie') {
-        if (details.initiator === 'chrome-extension://glepgipoohhiadcmcaajmkfniihojnea') {
-          details.requestHeaders[i].value = `${details.requestHeaders[i].value};csrf_same_site=1;`;
-        }
-      }
-    }
-
-    if (!hasReferer) {
-      details.requestHeaders.push({
-        name: 'Referer',
-        value: details.url
-      });
-      details.requestHeaders.push({
-        name: 'upgrade-insecure-requests',
-        value: '1'
-      });
-    }
-    return { requestHeaders: details.requestHeaders };
-  },
-  { urls: ['https://twitter.com/*'] },
-  ['blocking', 'requestHeaders']
-);
+collectTweetIntentWebPage();
