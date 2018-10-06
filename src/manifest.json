@@ -1,51 +1,47 @@
 {
-  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQD1+2Yieygk4GXa2mGcl+5j8VFSN6KIOqtNLu0KgZCRGFAK2+YGkzva//uBvfIL6jCWgjvypKEGol9AYQePi4fMqMHnzDEl+4actTu7hiUlZMKIAGq4zmPKqH5JVWmg9uYu69lS6HIPNOvwEeFW3OTgGp3UmJIvM1O9h7Il6Iz35wIDAQAB",
+  "key":
+    "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQD1+2Yieygk4GXa2mGcl+5j8VFSN6KIOqtNLu0KgZCRGFAK2+YGkzva//uBvfIL6jCWgjvypKEGol9AYQePi4fMqMHnzDEl+4actTu7hiUlZMKIAGq4zmPKqH5JVWmg9uYu69lS6HIPNOvwEeFW3OTgGp3UmJIvM1O9h7Il6Iz35wIDAQAB",
   "name": "__MSG_appName__",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "manifest_version": 2,
   "description": "__MSG_appDescription__",
   "icons": {
-      "16": "icon-16.png",
-      "128": "icon-128.png"
+    "16": "icon-16.png",
+    "128": "icon-128.png"
   },
   "default_locale": "en",
   "background": {
-      "persistent": true,
-      "page": "background.html"
+    "persistent": true,
+    "page": "background.html"
   },
   "browser_action": {
-      "default_icon": {
-          "19": "icon-19.png",
-          "38": "icon-38.png"
-      },
-      "default_title": "__MSG_appName__",
-      "default_popup": "popup.html"
+    "default_icon": {
+      "19": "icon-19.png",
+      "38": "icon-38.png"
+    },
+    "default_title": "__MSG_appName__",
+    "default_popup": "popup.html"
   },
   "options_page": "options.html",
   "content_scripts": [
-      {
-          "matches": [
-              "*://twitter.com/*"
-          ],
-          "js": [
-              "vendor.js",
-              "collect_tiwp.js"
-          ],
-          "run_at": "document_end",
-          "all_frames": true
-      }
+    {
+      "matches": ["*://twitter.com/*"],
+      "js": ["vendor.js", "collect_tiwp.js"],
+      "run_at": "document_end",
+      "all_frames": true
+    }
   ],
   "content_security_policy": "script-src 'self' 'unsafe-eval';  object-src 'self'",
   "permissions": [
-      "alarms",
-      "management",
-      "notifications",
-      "storage",
-      "tabs",
-      "webRequest",
-      "webRequestBlocking",
-      "http://twitter.com/*",
-      "https://twitter.com/*"
+    "alarms",
+    "management",
+    "notifications",
+    "storage",
+    "tabs",
+    "webRequest",
+    "webRequestBlocking",
+    "http://twitter.com/*",
+    "https://twitter.com/*"
   ],
   "web_accessible_resources": []
 }
