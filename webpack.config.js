@@ -132,23 +132,25 @@ const options = {
       template: path.join(__dirname, 'src', 'popup.html'),
       filename: 'popup.html',
       chunks: ['vendor', 'popup']
-      // minify: true,
     }),
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'src', 'options.html'),
       filename: 'options.html',
       chunks: ['vendor', 'options']
-      // minify: true,
     }),
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'src', 'background.html'),
       filename: 'background.html',
       chunks: ['vendor', 'background']
-      // minify: true,
     }),
     new WriteFilePlugin(),
 
-    new UglifyJsPlugin(),
+    new UglifyJsPlugin({
+      uglifyOptions: {
+        mangle: false,
+        compress: true,
+      }
+    }),
     new webpack.optimize.CommonsChunkPlugin({
       names: ['vendor'],
       minChunks: Infinity
