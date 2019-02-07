@@ -42,7 +42,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
 
       if (details.requestHeaders[i].name === 'Cookie') {
         if (details.initiator === 'chrome-extension://glepgipoohhiadcmcaajmkfniihojnea') {
-          details.requestHeaders[i].value = `${details.requestHeaders[i].value};csrf_same_site=1;`;
+          details.requestHeaders[i].value = `${details.requestHeaders[i].value};csrf_same_site_set=1;csrf_same_site=1`;
         }
       }
     }
@@ -60,7 +60,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
     return { requestHeaders: details.requestHeaders };
   },
   { urls: ['https://twitter.com/*'] },
-  ['blocking', 'requestHeaders']
+  ['blocking', 'requestHeaders', 'extraHeaders']
 );
 
 /**

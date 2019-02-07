@@ -89,22 +89,43 @@ export default class TwitterWeb {
       XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
       null
     );
-    const userIDElement = xpathResult.snapshotItem(0);
-    if (userIDElement !== null) {
-      const userID = userIDElement.value;
-      const xpathResult2 = document.evaluate(
-        `//div[@data-user-id="${userID}"][@data-screen-name]`,
-        twitterHtml,
-        null,
-        XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
-        null
-      );
-      const screenNameElement = xpathResult2.snapshotItem(0);
-      if (screenNameElement !== null) {
-        accountInfo.userID = userID;
-        accountInfo.screenName = screenNameElement.dataset.screenName;
+
+    if (xpathResult.snapshotLength > 0) {
+      for (let idx1 = 0; idx1 < xpathResult.snapshotLength; idx1++) {
+        const userIDElement = xpathResult.snapshotItem(idx1);
+        if (userIDElement !== null) {
+          const userID = userIDElement.value;
+          if (userID !== null) {
+            accountInfo.userID = userID;
+          }
+
+          const xpathResult2 = document.evaluate(
+            `//a[@data-nav="view_profile"]`,
+            twitterHtml,
+            null,
+            XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
+            null
+          );
+          if (xpathResult2.snapshotLength > 0) {
+            for (let idx2 = 0; idx2 < xpathResult.snapshotLength; idx2++) {
+              const screenNameElement = xpathResult2.snapshotItem(idx2);
+              if (screenNameElement != null && 'href' in screenNameElement && screenNameElement.href != null) {
+                const href = screenNameElement.getAttribute('href');
+                if (href != null) {
+                  for (let username of href.split('/')) {
+                    if (username != null && username.length > 0) {
+                      accountInfo.screenName = username;
+                      break;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
+
     return accountInfo;
   }
 
@@ -121,10 +142,20 @@ export default class TwitterWeb {
       XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
       null
     );
-    const authenticityTokenElement = xpathResult.snapshotItem(0);
-    if (authenticityTokenElement !== null) {
-      return authenticityTokenElement.value;
+
+    if (xpathResult.snapshotLength > 0) {
+      for (let idx = 0; idx < xpathResult.snapshotLength; idx++) {
+        const authenticityTokenElement = xpathResult.snapshotItem(idx);
+        if (
+          authenticityTokenElement !== null &&
+          'value' in authenticityTokenElement &&
+          authenticityTokenElement.value.length > 0
+        ) {
+          return authenticityTokenElement.value;
+        }
+      }
     }
+
     return null;
   }
 
