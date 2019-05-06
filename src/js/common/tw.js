@@ -36,7 +36,7 @@ export default class TwitterWeb {
    */
   static getTwitterWebHTML() {
     return new Promise((resolve, reject) => {
-      fetch(TWITTER_WEB_URL, { credentials: 'include', redirect: 'follow' })
+      fetch(TWEET_WEB_INTENT_URL, { credentials: 'include', redirect: 'follow' })
         .then(async (response) => {
           if (response.ok) {
             const body = document.createElement('div');
@@ -60,16 +60,13 @@ export default class TwitterWeb {
    */
   static isLogin(twitterHtml) {
     const xpathResult = document.evaluate(
-      '//*[@id="signout-button"]',
+      '//*[@id="session"]',
       twitterHtml,
       null,
       XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
       null
     );
-    if (xpathResult.snapshotLength === 1) {
-      return true;
-    }
-    return false;
+    return xpathResult.snapshotLength === 1;
   }
 
   /**
@@ -112,7 +109,7 @@ export default class TwitterWeb {
               if (screenNameElement != null && 'href' in screenNameElement && screenNameElement.href != null) {
                 const href = screenNameElement.getAttribute('href');
                 if (href != null) {
-                  for (let username of href.split('/')) {
+                  for (const username of href.split('/')) {
                     if (username != null && username.length > 0) {
                       accountInfo.screenName = username;
                       break;
