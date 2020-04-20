@@ -1,7 +1,7 @@
 {
   "extends": [],
   "plugins": [],
-  "rules": {,
+  "rules": {},
   "globals": {
     "chrome": true,
     "window": true,
