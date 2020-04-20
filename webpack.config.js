@@ -9,6 +9,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const fileExtensions = ['jpg', 'jpeg', 'png', 'gif', 'eot', 'otf', 'svg', 'ttf', 'woff', 'woff2'];
 
 module.exports = {
+  mode: process.env.NODE_ENV,
   optimization: {
     minimize: process.env.NODE_ENV === 'production' ? true : false,
     minimizer: [
@@ -61,9 +62,7 @@ module.exports = {
     ]
   },
   plugins: [
-    new CleanWebpackPlugin({
-      cleanOnceBeforeBuildPatterns: ['build']
-    }),
+    new CleanWebpackPlugin({}),
     new CopyWebpackPlugin([
       {
         from: 'src/manifest.json',
