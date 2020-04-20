@@ -1,19 +1,37 @@
-const webpack = require('webpack');
 const path = require('path');
-const env = require('./utils/env');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WriteFilePlugin = require('write-file-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 const fileExtensions = ['jpg', 'jpeg', 'png', 'gif', 'eot', 'otf', 'svg', 'ttf', 'woff', 'woff2'];
 
-const vendor = ['lodash.isnumber', 'lodash.isstring', 'lodash.template', 'lodash.throttle', 'jquery', 'twitter-text'];
-
-const options = {
+module.exports = {
+  optimization: {
+    minimize: process.env.NODE_ENV === 'production' ? true : false,
+    minimizer: [
+      new TerserPlugin({
+        test: /\.js(\?.*)?$/i,
+        terserOptions: {
+          mangle: false,
+          sourceMap: process.env.NODE_ENV !== 'production' ? true : false
+        }
+      })
+    ],
+    runtimeChunk: false,
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendor',
+          chunks: 'all'
+        }
+      }
+    }
+  },
   entry: {
-    vendor,
     popup: path.join(__dirname, 'src', 'js', 'popup', 'index.js'),
     options: path.join(__dirname, 'src', 'js', 'options', 'index.js'),
     background: path.join(__dirname, 'src', 'js', 'background', 'index.js'),
@@ -42,13 +60,9 @@ const options = {
       }
     ]
   },
-  resolve: {
-    alias: {}
-  },
   plugins: [
-    new CleanWebpackPlugin(['build']),
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(env.NODE_ENV)
+    new CleanWebpackPlugin({
+      cleanOnceBeforeBuildPatterns: ['build']
     }),
     new CopyWebpackPlugin([
       {
@@ -56,7 +70,7 @@ const options = {
         transform(content) {
           const manifestJSON = JSON.parse(content.toString());
 
-          if (env.NODE_ENV === 'production') {
+          if (process.env.NODE_ENV === 'production') {
             delete manifestJSON.key;
           }
 
@@ -77,36 +91,6 @@ const options = {
       },
 
       // Fonts: Roboto
-      // {
-      //   from: "src/css/roboto-v18-latin-100.woff2"
-      // },
-      // {
-      //   from: "src/css/roboto-v18-latin-100italic.woff2"
-      // },
-      // {
-      //   from: "src/css/roboto-v18-latin-300.woff2"
-      // },
-      // {
-      //   from: "src/css/roboto-v18-latin-300italic.woff2"
-      // },
-      // {
-      //   from: "src/css/roboto-v18-latin-500.woff2"
-      // },
-      // {
-      //   from: "src/css/roboto-v18-latin-500italic.woff2"
-      // },
-      // {
-      //   from: "src/css/roboto-v18-latin-700.woff2"
-      // },
-      // {
-      //   from: "src/css/roboto-v18-latin-700italic.woff2"
-      // },
-      // {
-      //   from: "src/css/roboto-v18-latin-900.woff2"
-      // },
-      // {
-      //   from: "src/css/roboto-v18-latin-900italic.woff2"
-      // },
       {
         from: 'src/css/roboto-v18-latin-italic.woff2'
       },
@@ -143,23 +127,6 @@ const options = {
       filename: 'background.html',
       chunks: ['vendor', 'background']
     }),
-    new WriteFilePlugin(),
-
-    new UglifyJsPlugin({
-      uglifyOptions: {
-        mangle: false,
-        compress: true,
-      }
-    }),
-    new webpack.optimize.CommonsChunkPlugin({
-      names: ['vendor'],
-      minChunks: Infinity
-    })
+    new WriteFilePlugin()
   ]
 };
-
-if (env.NODE_ENV === 'development') {
-  options.devtool = 'cheap-module-eval-source-map';
-}
-
-module.exports = options;
