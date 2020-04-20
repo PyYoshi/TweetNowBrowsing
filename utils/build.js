@@ -1,11 +1,11 @@
-const webpack = require('webpack');
-const config = require('../webpack.config');
 const fs = require('fs');
 const path = require('path');
+
+const webpack = require('webpack');
 const rimraf = require('rimraf');
 const archiver = require('archiver');
 
-delete config.chromeExtensionBoilerplate;
+const config = require('../webpack.config');
 
 webpack(config, (err) => {
   if (err) {

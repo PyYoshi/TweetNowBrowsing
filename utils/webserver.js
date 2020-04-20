@@ -1,15 +1,17 @@
-const WebpackDevServer = require('webpack-dev-server');
-const webpack = require('webpack');
-const config = require('../webpack.config');
 const path = require('path');
 
-const options = config.chromeExtensionBoilerplate || {};
-const excludeEntriesToHotReload = options.notHotReload || [];
+const WebpackDevServer = require('webpack-dev-server');
+const webpack = require('webpack');
+
+const config = require('../webpack.config');
 
 const devServerConfig = {
   HOST: process.env.HOST || 'localhost',
   PORT: process.env.PORT || 3000
 };
+
+const options = config.chromeExtensionBoilerplate || {};
+const excludeEntriesToHotReload = options.notHotReload || [];
 
 // eslint-disable-next-line no-restricted-syntax
 for (const entryName in config.entry) {
