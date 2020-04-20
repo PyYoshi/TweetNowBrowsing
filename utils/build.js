@@ -1,5 +1,4 @@
 const webpack = require('webpack');
-const env = require('./env');
 const config = require('../webpack.config');
 const fs = require('fs');
 const path = require('path');
@@ -13,7 +12,7 @@ webpack(config, (err) => {
     throw err;
   }
 
-  if (env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === 'production') {
     const zipPath = path.join(__dirname, '../', 'release.zip');
 
     rimraf(zipPath, (rimrafErr) => {

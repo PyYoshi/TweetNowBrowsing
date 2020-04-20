@@ -1,17 +1,21 @@
 const WebpackDevServer = require('webpack-dev-server');
 const webpack = require('webpack');
 const config = require('../webpack.config');
-const env = require('./env');
 const path = require('path');
 
 const options = config.chromeExtensionBoilerplate || {};
 const excludeEntriesToHotReload = options.notHotReload || [];
 
+const devServerConfig = {
+  HOST: process.env.HOST || 'localhost',
+  PORT: process.env.PORT || 3000
+};
+
 // eslint-disable-next-line no-restricted-syntax
 for (const entryName in config.entry) {
   if (excludeEntriesToHotReload.indexOf(entryName) === -1) {
     config.entry[entryName] = [
-      `webpack-dev-server/client?http://${env.HOST}:${env.PORT}`,
+      `webpack-dev-server/client?http://${devServerConfig.HOST}:${devServerConfig.PORT}`,
       'webpack/hot/dev-server'
     ].concat(config.entry[entryName]);
   }
@@ -29,4 +33,4 @@ const server = new WebpackDevServer(compiler, {
   headers: { 'Access-Control-Allow-Origin': '*' }
 });
 
-server.listen(env.PORT);
+server.listen(devServerConfig.PORT);
