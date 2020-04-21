@@ -5,7 +5,7 @@ export default class LocalStorage {
    * @param {Number|String|Boolean|object|array} 初期値
    * @return {Number|String|Boolean|object|array|null}
    */
-  static get(key, defaultValue = null) {
+  static get<T>(key: string, defaultValue: T = null): T {
     const value = window.localStorage[key];
     if (typeof value === 'undefined') {
       return defaultValue;
@@ -18,7 +18,7 @@ export default class LocalStorage {
    * @param {String} key localStorageのkey
    * @param {Number|String|Boolean|object|array}
    */
-  static set(key, value) {
+  static set<T>(key: string, value: T): void {
     window.localStorage[key] = JSON.stringify(value);
   }
 }

@@ -4,14 +4,18 @@ import template from 'lodash.template';
  * 拡張可能なエラークラス
  */
 class ExtendableError extends Error {
+  tweet: string;
+  remain: number;
+  url: string;
+
   /**
    * @param {String} message error message
    */
-  constructor(message, url = null) {
+  constructor(message: string, url: string | null = null) {
     super(message);
     this.name = this.constructor.name;
     this.message = message;
-    Error.captureStackTrace(this, this.constructor.name);
+    Error.captureStackTrace(this, ExtendableError);
 
     if (url !== null) {
       this.url = url;
@@ -22,10 +26,10 @@ class ExtendableError extends Error {
    * Webページを開く
    * @param {function(tab: chrome.tabs.Tab)} callback https://developer.chrome.com/extensions/tabs#method-create
    */
-  openWebPage(callback = null) {
+  openWebPage(callback: (tab: chrome.tabs.Tab) => void | null = null): void {
     const createOption = {
       url: this.url,
-      active: true
+      active: true,
     };
     if (callback === null) {
       chrome.tabs.create(createOption);
@@ -46,7 +50,7 @@ export class InvalidTweetError extends ExtendableError {
    * @param {Number} remain ついーとできる残り文字数
    * @param {String} intentURL Tweet Intent Web URL
    */
-  constructor(tweet, remain, intentURL) {
+  constructor(tweet: string, remain: number, intentURL: string) {
     const compiled = template(chrome.i18n.getMessage('invalidTweetErrorMessage'));
     const compiledMessage = compiled({ tweet, remain });
     super(compiledMessage, intentURL);
@@ -66,13 +70,13 @@ export class TweetFailedError extends ExtendableError {
    * @param {Number} status ついーとできる残り文字数
    * @param {String} intentURL Tweet Intent Web URL
    */
-  constructor(tweet, status, intentURL) {
+  constructor(tweet: string, remain: number, intentURL: string) {
     const compiled = template(chrome.i18n.getMessage('tweetFailedErrorMessage'));
     const compiledMessage = compiled({ tweet });
     super(compiledMessage, intentURL);
 
     this.tweet = tweet;
-    this.status = status;
+    this.remain = remain;
     this.url = intentURL;
   }
 }

@@ -6,7 +6,7 @@ import {
   TWITTER_LOGIN_URL,
   CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE,
   CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE_DEFAULT_VALUE,
-  LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN
+  LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN,
 } from '../common/const';
 import LocalStorage from '../common/localstorage';
 import TwitterWeb from '../common/tw';
@@ -16,12 +16,10 @@ import '../../css/material-icons.css';
 import '../../css/base.css';
 import '../../css/popup.css';
 
-function validateStatus() {
+function validateStatus(): void {
   const twStatus = $('#tw-status').val();
-  const checkedTweet = TwitterWeb.checkTweet(twStatus);
-  $('#tw-status-counter')
-    .val(checkedTweet.remain)
-    .change();
+  const checkedTweet = TwitterWeb.checkTweet(twStatus as string);
+  $('#tw-status-counter').val(checkedTweet.remain).change();
   if (checkedTweet.isValid) {
     $('#tw-status-btn').prop('disabled', false);
   } else {
@@ -35,7 +33,7 @@ $(document).ready(() => {
     // ログインしていない
     chrome.tabs.create({
       url: TWITTER_LOGIN_URL,
-      active: true
+      active: true,
     });
     window.close();
   } else {
@@ -44,7 +42,7 @@ $(document).ready(() => {
       const url = chrome.extension.getURL('/options.html');
       chrome.tabs.create({
         url,
-        active: true
+        active: true,
       });
     });
 

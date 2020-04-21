@@ -1,7 +1,7 @@
 import twttr from 'twitter-text';
 import template from 'lodash.template';
 
-import { TWEET_WEB_INTENT_URL, TWEET_API_URL, TWITTER_WEB_URL } from './const';
+import { TWEET_WEB_INTENT_URL, TWEET_API_URL } from './const';
 import { InvalidTweetError, TweetFailedError } from './errors';
 
 /**
@@ -14,7 +14,7 @@ export default class TwitterWeb {
    * @param {string} tweet ついーと
    * @return {string} URL
    */
-  static buildTweetIntentURL(tweet) {
+  static buildTweetIntentURL(tweet: string): string {
     const encodedTweet = encodeURIComponent(tweet);
     return `${TWEET_WEB_INTENT_URL}?text=${encodedTweet}`;
   }
@@ -25,7 +25,7 @@ export default class TwitterWeb {
    * @param {String} Tweet ID
    * @return {String} URL
    */
-  static buildTweetStatusURL(screenName, tweetID) {
+  static buildTweetStatusURL(screenName: string, tweetID: string): string {
     const statusURLCompiled = template('https://twitter.com/<%= screenName %>/status/<%= tweetID %>');
     return statusURLCompiled({ screenName, tweetID });
   }
@@ -34,7 +34,7 @@ export default class TwitterWeb {
    * Twitter Web ページのHTMLエレメントを取得する
    * @return {Promise<Element, Error>}
    */
-  static getTwitterWebHTML() {
+  static getTwitterWebHTML(): Promise<HTMLDivElement> {
     return new Promise((resolve, reject) => {
       fetch(TWEET_WEB_INTENT_URL, { credentials: 'include', redirect: 'follow' })
         .then(async (response) => {
@@ -58,7 +58,7 @@ export default class TwitterWeb {
    * @param {Element} twitterHtml TwitterのWebページエレメント.
    * @return {boolean}
    */
-  static isLogin(twitterHtml) {
+  static isLogin(twitterHtml: HTMLDivElement): boolean {
     const xpathResult = document.evaluate(
       '//*[@id="session"]',
       twitterHtml,
@@ -74,10 +74,10 @@ export default class TwitterWeb {
    * @param {Element} twitterHtml TwitterのWebページエレメント.
    * @return {string|null}
    */
-  static getAccountInfo(twitterHtml) {
-    const accountInfo = {
+  static getAccountInfo(twitterHtml: HTMLDivElement): { userID: string | null; screenName: string | null } {
+    const accountInfo: { userID: string | null; screenName: string | null } = {
       userID: null,
-      screenName: null
+      screenName: null,
     };
     const xpathResult = document.evaluate(
       '//input[@id="current-user-id"]',
@@ -131,7 +131,7 @@ export default class TwitterWeb {
    * @param {Element} twitterHtml TwitterのWebページエレメント.
    * @return {string|null}
    */
-  static getAuthenticityToken(twitterHtml) {
+  static getAuthenticityToken(twitterHtml: HTMLDivElement): string | null {
     const xpathResult = document.evaluate(
       './/input[@name="authenticity_token"]',
       twitterHtml,
@@ -163,10 +163,10 @@ export default class TwitterWeb {
    * @property {number} remain 残り文字数. 140字を超える場合は負の値を返す.
    * @property {boolean} isValid 1字以上140字以内に収まっている場合はtrue, それ以外はfalse.
    */
-  static checkTweet(tweet) {
+  static checkTweet(tweet: string) {
     const ret = {
       remain: twttr.configs.defaults.maxWeightedTweetLength,
-      isValid: false
+      isValid: false,
     };
 
     // ついーと文字をパース
@@ -190,7 +190,7 @@ export default class TwitterWeb {
    * @param {string} url
    * @return {string} 加工済みついーと
    */
-  static normalizeTweet(title, url, templateStr) {
+  static normalizeTweet(title: string, url: string, templateStr: string): string {
     const templateFunc = template(templateStr);
     let status = templateFunc({ title, url });
     const parsedResult = twttr.parseTweet(status);
@@ -219,7 +219,7 @@ export default class TwitterWeb {
       if (checked.isValid) {
         const payload = {
           authenticity_token: authenticityToken,
-          status: tweet
+          status: tweet,
         };
         const body = Object.keys(payload)
           .map((key) => `${key}=${encodeURIComponent(payload[key])}`)
@@ -228,9 +228,9 @@ export default class TwitterWeb {
           method: 'POST',
           body,
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
           },
-          credentials: 'include'
+          credentials: 'include',
         })
           .then(async (response) => {
             if (response.ok) {
