@@ -8,9 +8,7 @@ module.exports = {
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
   ],
-  globals: {
-    chrome: true,
-  },
+  globals: {},
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 2018,
