@@ -61,7 +61,7 @@
     "write-file-webpack-plugin": "4.2.0"
   },
   "dependencies": {
-    "jquery": "^3.3.1",
+    "jquery": "^3.5.0",
     "lodash.isnumber": "^3.0.3",
     "lodash.isstring": "^4.0.1",
     "lodash.template": "^4.4.0",
