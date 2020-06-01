@@ -70,21 +70,19 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
  * @param {Boolean} isLogin ログイン済みかどうか.
  */
 function renderBadge(isLogin) {
-  chrome.management.getSelf((result) => {
-    let badge = '';
-    let color = [65, 131, 196, 255];
-    const title = result.name;
+  const appName = chrome.i18n.getMessage('appName');
+  let badge = '';
+  let color = [65, 131, 196, 255];
 
-    if (!isLogin) {
-      badge = 'X';
-      color = [166, 41, 41, 255];
-    }
+  if (!isLogin) {
+    badge = 'X';
+    color = [166, 41, 41, 255];
+  }
 
-    chrome.browserAction.setBadgeText({ text: badge });
-    chrome.browserAction.setBadgeBackgroundColor({ color });
+  chrome.browserAction.setBadgeText({ text: badge });
+  chrome.browserAction.setBadgeBackgroundColor({ color });
 
-    chrome.browserAction.setTitle({ title });
-  });
+  chrome.browserAction.setTitle({ title: appName });
 }
 
 function initPrivateConfig() {
