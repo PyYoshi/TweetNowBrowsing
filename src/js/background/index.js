@@ -42,7 +42,9 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
 
       if (details.requestHeaders[i].name === 'Cookie') {
         if (details.initiator === 'chrome-extension://glepgipoohhiadcmcaajmkfniihojnea') {
-          details.requestHeaders[i].value = `${details.requestHeaders[i].value};csrf_same_site_set=1;csrf_same_site=1`;
+          details.requestHeaders[i].value = `${
+            details.requestHeaders[i].value
+          };csrf_same_site_set=1;csrf_same_site=1;remember_checked_on=1`;
         }
       }
     }
@@ -69,22 +71,19 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
  */
 function renderBadge(isLogin) {
   chrome.management.getSelf((result) => {
-    const badge = '';
-    const color = [65, 131, 196, 255];
+    let badge = '';
+    let color = [65, 131, 196, 255];
     const title = result.name;
 
-    // FIXME
-    // if (!isLogin) {
-    //   badge = 'X';
-    //   color = [166, 41, 41, 255];
-    // }
+    if (!isLogin) {
+      badge = 'X';
+      color = [166, 41, 41, 255];
+    }
 
     chrome.browserAction.setBadgeText({ text: badge });
     chrome.browserAction.setBadgeBackgroundColor({ color });
 
-    // FIXME
-    const modTitle = `${title} | 暫定的にTwitterのIntentページを開きます`;
-    chrome.browserAction.setTitle({ title: modTitle });
+    chrome.browserAction.setTitle({ title });
   });
 }
 
@@ -118,7 +117,8 @@ function collectTweetIntentWebPage() {
         initPrivateConfig();
       }
     })
-    .catch(() => {
+    .catch((err) => {
+      console.error(err);
       initPrivateConfig();
     });
 }

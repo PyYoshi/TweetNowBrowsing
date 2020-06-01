@@ -6,7 +6,7 @@ import {
   TWITTER_LOGIN_URL,
   CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE,
   CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE_DEFAULT_VALUE,
-  LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN,
+  LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN
 } from '../common/const';
 import LocalStorage from '../common/localstorage';
 import TwitterWeb from '../common/tw';
@@ -19,7 +19,9 @@ import '../../css/popup.css';
 function validateStatus() {
   const twStatus = $('#tw-status').val();
   const checkedTweet = TwitterWeb.checkTweet(twStatus);
-  $('#tw-status-counter').val(checkedTweet.remain).change();
+  $('#tw-status-counter')
+    .val(checkedTweet.remain)
+    .change();
   if (checkedTweet.isValid) {
     $('#tw-status-btn').prop('disabled', false);
   } else {
@@ -28,45 +30,12 @@ function validateStatus() {
 }
 
 $(document).ready(() => {
-  // FIXME: 暫定対応
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    if (tabs instanceof Array && tabs.length > 0) {
-      const { url } = tabs[0];
-      let { title } = tabs[0];
-      if (title === null || !(typeof title === 'string' && title.length > 0)) {
-        title = url;
-      }
-
-      chrome.storage.sync.get(CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE, (object) => {
-        let statusTemplate;
-        if (CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE in object) {
-          statusTemplate = object[CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE];
-        } else {
-          statusTemplate = CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE_DEFAULT_VALUE;
-        }
-
-        // ツイートを生成
-        const status = TwitterWeb.normalizeTweet(title, url, statusTemplate);
-
-        // Intent URLを生成
-        const intentURL = TwitterWeb.buildTweetIntentURL(status);
-
-        // Intent URLを開く
-        chrome.tabs.create({
-          url: intentURL,
-          active: true,
-        });
-      });
-    }
-  });
-  return;
-
   const authenticityToken = LocalStorage.get(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN);
   if (authenticityToken === null || !(typeof authenticityToken === 'string' && authenticityToken.length > 0)) {
     // ログインしていない
     chrome.tabs.create({
       url: TWITTER_LOGIN_URL,
-      active: true,
+      active: true
     });
     window.close();
   } else {
@@ -75,7 +44,7 @@ $(document).ready(() => {
       const url = chrome.extension.getURL('/options.html');
       chrome.tabs.create({
         url,
-        active: true,
+        active: true
       });
     });
 

@@ -36,7 +36,7 @@ export default class TwitterWeb {
    */
   static getTwitterWebHTML() {
     return new Promise((resolve, reject) => {
-      fetch(TWEET_WEB_INTENT_URL, { credentials: 'include', redirect: 'follow' })
+      fetch(TWITTER_WEB_URL, { credentials: 'include', redirect: 'follow' })
         .then(async (response) => {
           if (response.ok) {
             const body = document.createElement('div');
