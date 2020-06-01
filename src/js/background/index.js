@@ -69,16 +69,22 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
  */
 function renderBadge(isLogin) {
   chrome.management.getSelf((result) => {
-    let badge = '';
-    let color = [65, 131, 196, 255];
+    const badge = '';
+    const color = [65, 131, 196, 255];
     const title = result.name;
-    if (!isLogin) {
-      badge = 'X';
-      color = [166, 41, 41, 255];
-    }
+
+    // FIXME
+    // if (!isLogin) {
+    //   badge = 'X';
+    //   color = [166, 41, 41, 255];
+    // }
+
     chrome.browserAction.setBadgeText({ text: badge });
     chrome.browserAction.setBadgeBackgroundColor({ color });
-    chrome.browserAction.setTitle({ title });
+
+    // FIXME
+    const modTitle = `${title} | 暫定的にTwitterのIntentページを開きます`;
+    chrome.browserAction.setTitle({ title: modTitle });
   });
 }
 
