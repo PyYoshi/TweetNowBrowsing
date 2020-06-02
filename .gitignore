@@ -3,3 +3,4 @@ build
 secrets.*.js
 .DS_Store
 *.zip
+/.idea

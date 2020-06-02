@@ -17,7 +17,8 @@ import {
   LOCAL_STORAGE_KEY_PRIVATE_CONFIG_SCREEN_NAME,
   CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC,
   CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC_DEFAULT_VALUE,
-  CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC_DISABLE_VALUE
+  CHROME_STORAGE_KEY_NOTIFICATION_DISPLAY_TIME_SEC_DISABLE_VALUE,
+  LOCAL_STORAGE_KEY_CSRF_TOKEN
 } from '../common/const';
 import LocalStorage from '../common/localstorage';
 import TwitterWeb from '../common/tw';
@@ -28,42 +29,42 @@ import { guid } from '../common/utility';
 // declarativeWebRequestは将来削除されるみたい
 // https://bugs.chromium.org/p/chromium/issues/detail?id=112155#c109
 // https://bugs.chromium.org/p/chromium/issues/detail?id=586636
-chrome.webRequest.onBeforeSendHeaders.addListener(
-  (details) => {
-    let hasReferer = false;
-    for (let i = 0; i < details.requestHeaders.length; i++) {
-      if (details.requestHeaders[i].name === 'Origin') {
-        // OriginヘッダーがついてるとTwitterに投稿できなかったので外すように
-        details.requestHeaders.splice(i, 1);
-      }
-      if (details.requestHeaders[i].name === 'Referer') {
-        hasReferer = true;
-      }
-
-      if (details.requestHeaders[i].name === 'Cookie') {
-        if (details.initiator === 'chrome-extension://glepgipoohhiadcmcaajmkfniihojnea') {
-          details.requestHeaders[i].value = `${
-            details.requestHeaders[i].value
-          };csrf_same_site_set=1;csrf_same_site=1;remember_checked_on=1`;
-        }
-      }
-    }
-
-    if (!hasReferer) {
-      details.requestHeaders.push({
-        name: 'Referer',
-        value: details.url
-      });
-      details.requestHeaders.push({
-        name: 'upgrade-insecure-requests',
-        value: '1'
-      });
-    }
-    return { requestHeaders: details.requestHeaders };
-  },
-  { urls: ['https://twitter.com/*'] },
-  ['blocking', 'requestHeaders', 'extraHeaders']
-);
+// chrome.webRequest.onBeforeSendHeaders.addListener(
+//   (details) => {
+//     let hasReferer = false;
+//     for (let i = 0; i < details.requestHeaders.length; i++) {
+//       if (details.requestHeaders[i].name === 'Origin') {
+//         // OriginヘッダーがついてるとTwitterに投稿できなかったので外すように
+//         details.requestHeaders.splice(i, 1);
+//       }
+//       if (details.requestHeaders[i].name === 'Referer') {
+//         hasReferer = true;
+//       }
+//
+//       if (details.requestHeaders[i].name === 'Cookie') {
+//         if (details.initiator === 'chrome-extension://glepgipoohhiadcmcaajmkfniihojnea') {
+//           details.requestHeaders[i].value = `${
+//             details.requestHeaders[i].value
+//           };csrf_same_site_set=1;csrf_same_site=1;remember_checked_on=1`;
+//         }
+//       }
+//     }
+//
+//     if (!hasReferer) {
+//       details.requestHeaders.push({
+//         name: 'Referer',
+//         value: details.url
+//       });
+//       details.requestHeaders.push({
+//         name: 'upgrade-insecure-requests',
+//         value: '1'
+//       });
+//     }
+//     return { requestHeaders: details.requestHeaders };
+//   },
+//   { urls: ['https://twitter.com/*'] },
+//   ['blocking', 'requestHeaders', 'extraHeaders']
+// );
 
 /**
  * Badgeを描画する.
@@ -86,39 +87,55 @@ function renderBadge(isLogin) {
 }
 
 function initPrivateConfig() {
-  // localStorageのauthenticity_tokenをnullへ
-  LocalStorage.set(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN, null);
+  // // localStorageのauthenticity_tokenをnullへ
+  // LocalStorage.set(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN, null);
+  //
+  // // localStorageのアカウント情報を初期化
+  // LocalStorage.set(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_USER_ID, null);
+  // LocalStorage.set(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_SCREEN_NAME, null);
 
-  // localStorageのアカウント情報を初期化
-  LocalStorage.set(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_USER_ID, null);
-  LocalStorage.set(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_SCREEN_NAME, null);
+  LocalStorage.set(LOCAL_STORAGE_KEY_CSRF_TOKEN, null);
 }
 
 /**
  * Tweet Intent WebのHTMLを取得しlocalStorageへauthenticity_token,ui_metricsを保存する
  */
 function collectTweetIntentWebPage() {
-  TwitterWeb.getTwitterWebHTML()
-    .then((element) => {
-      const isLogin = TwitterWeb.isLogin(element);
-      renderBadge(isLogin);
-      if (isLogin) {
-        // HTMLからauthenticity_tokenを取得・保存
-        const authenticityToken = TwitterWeb.getAuthenticityToken(element);
-        LocalStorage.set(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN, authenticityToken);
-
-        // HTMLからアカウント情報を取得・保存
-        const accountInfo = TwitterWeb.getAccountInfo(element);
-        LocalStorage.set(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_USER_ID, accountInfo.userID);
-        LocalStorage.set(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_SCREEN_NAME, accountInfo.screenName);
-      } else {
-        initPrivateConfig();
+  // TwitterWeb.getTwitterWebHTML()
+  //   .then((element) => {
+  //     const isLogin = TwitterWeb.isLogin(element);
+  //     renderBadge(isLogin);
+  //     if (isLogin) {
+  //       // HTMLからauthenticity_tokenを取得・保存
+  //       const authenticityToken = TwitterWeb.getAuthenticityToken(element);
+  //       LocalStorage.set(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN, authenticityToken);
+  //
+  //       // HTMLからアカウント情報を取得・保存
+  //       const accountInfo = TwitterWeb.getAccountInfo(element);
+  //       LocalStorage.set(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_USER_ID, accountInfo.userID);
+  //       LocalStorage.set(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_SCREEN_NAME, accountInfo.screenName);
+  //     } else {
+  //       initPrivateConfig();
+  //     }
+  //   })
+  //   .catch((err) => {
+  //     console.error(err);
+  //     initPrivateConfig();
+  //   });
+  chrome.cookies.get(
+    {
+      url: 'https://twitter.com',
+      name: 'ct0'
+    },
+    (cookie) => {
+      let isLogin = false;
+      if (cookie != null) {
+        LocalStorage.set(LOCAL_STORAGE_KEY_CSRF_TOKEN, cookie.value);
+        isLogin = true;
       }
-    })
-    .catch((err) => {
-      console.error(err);
-      initPrivateConfig();
-    });
+      renderBadge(isLogin);
+    }
+  );
 }
 
 /**
@@ -127,8 +144,8 @@ function collectTweetIntentWebPage() {
  */
 function sendTweet(tweet, notificationDisplayTimeMSec = 3000) {
   const notificationID = `${new Date().getTime()}-${guid()}`;
-  const authenticityToken = LocalStorage.get(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN);
-  if (typeof authenticityToken !== 'string') {
+  const csrfToken = LocalStorage.get(LOCAL_STORAGE_KEY_CSRF_TOKEN);
+  if (typeof csrfToken !== 'string') {
     // 通知: ログインしていない / ログインURLを開く
     chrome.notifications.create(
       notificationID,
@@ -174,7 +191,7 @@ function sendTweet(tweet, notificationDisplayTimeMSec = 3000) {
       },
       () => {}
     );
-    TwitterWeb.sendTweet(tweet, authenticityToken)
+    TwitterWeb.sendTweet(tweet, csrfToken)
       .then((res) => {
         // 通知: 投稿成功
         chrome.notifications.update(
@@ -191,16 +208,17 @@ function sendTweet(tweet, notificationDisplayTimeMSec = 3000) {
           chrome.notifications.clear(notificationID);
         }, notificationDisplayTimeMSec);
         chrome.notifications.onClicked.addListener((_notificationID) => {
-          if (_notificationID === notificationID && 'tweet_id' in res.body) {
-            let url = `https://twitter.com/intent/favorite?tweet_id=${res.body.tweet_id}`;
-            const screenName = LocalStorage.get(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_SCREEN_NAME);
-            if (typeof screenName === 'string' && screenName.length > 0) {
-              url = TwitterWeb.buildTweetStatusURL(screenName, res.body.tweet_id);
+          if (_notificationID === notificationID) {
+            const json = JSON.parse(res);
+            if ('user' in json && 'name' in json.user) {
+              if ('id_str' in json) {
+                const tweetURL = TwitterWeb.buildTweetStatusURL(json.user.name, json.id_str);
+                chrome.tabs.create({
+                  url: tweetURL,
+                  active: true
+                });
+              }
             }
-            chrome.tabs.create({
-              url,
-              active: true
-            });
           }
         });
       })

@@ -1,7 +1,14 @@
 import twttr from 'twitter-text';
 import template from 'lodash.template';
 
-import { TWEET_WEB_INTENT_URL, TWEET_API_URL, TWITTER_WEB_URL } from './const';
+import {
+  TWEET_WEB_INTENT_URL,
+  TWEET_API_URL,
+  TWITTER_WEB_URL,
+  TWITTER_WEB_CSRF_TOKEN_HEADER_NAME,
+  TWITTER_WEB_AUTHORIZATION_HEADER_NAME,
+  TWITTER_WEB_AUTHORIZATION_HEADER_VALUE
+} from './const';
 import { InvalidTweetError, TweetFailedError } from './errors';
 
 /**
@@ -36,7 +43,10 @@ export default class TwitterWeb {
    */
   static getTwitterWebHTML() {
     return new Promise((resolve, reject) => {
-      fetch(TWITTER_WEB_URL, { credentials: 'include', redirect: 'follow' })
+      fetch(TWITTER_WEB_URL, {
+        credentials: 'include',
+        redirect: 'follow'
+      })
         .then(async (response) => {
           if (response.ok) {
             const body = document.createElement('div');
@@ -212,24 +222,28 @@ export default class TwitterWeb {
    * @param {string} authenticityToken authenticity_token.
    * @return {Promise<,>} ES6-Promiseオブジェクトを返す.
    */
-  static sendTweet(tweet, authenticityToken) {
+  static sendTweet(tweet, csrfToken) {
     return new Promise((resolve, reject) => {
       const checked = TwitterWeb.checkTweet(tweet);
       const intentURL = TwitterWeb.buildTweetIntentURL(tweet);
       if (checked.isValid) {
         const payload = {
-          authenticity_token: authenticityToken,
           status: tweet
         };
         const body = Object.keys(payload)
           .map((key) => `${key}=${encodeURIComponent(payload[key])}`)
           .join('&');
+
+        const headers = {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+        };
+        headers[TWITTER_WEB_CSRF_TOKEN_HEADER_NAME] = csrfToken;
+        headers[TWITTER_WEB_AUTHORIZATION_HEADER_NAME] = TWITTER_WEB_AUTHORIZATION_HEADER_VALUE;
+
         fetch(TWEET_API_URL, {
           method: 'POST',
           body,
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-          },
+          headers,
           credentials: 'include'
         })
           .then(async (response) => {

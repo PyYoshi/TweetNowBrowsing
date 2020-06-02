@@ -33,13 +33,12 @@
   "content_security_policy": "script-src 'self' 'unsafe-eval';  object-src 'self'",
   "permissions": [
     "alarms",
+    "cookies",
     "notifications",
     "storage",
     "tabs",
-    "webRequest",
-    "webRequestBlocking",
-    "http://twitter.com/*",
-    "https://twitter.com/*"
+    "https://twitter.com/*",
+    "https://api.twitter.com/*"
   ],
   "web_accessible_resources": []
 }

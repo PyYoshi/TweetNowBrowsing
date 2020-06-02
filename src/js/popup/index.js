@@ -6,7 +6,8 @@ import {
   TWITTER_LOGIN_URL,
   CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE,
   CHROME_STORAGE_KEY_POST_STATUS_TEMPLATE_DEFAULT_VALUE,
-  LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN
+  LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN,
+  LOCAL_STORAGE_KEY_CSRF_TOKEN
 } from '../common/const';
 import LocalStorage from '../common/localstorage';
 import TwitterWeb from '../common/tw';
@@ -30,8 +31,8 @@ function validateStatus() {
 }
 
 $(document).ready(() => {
-  const authenticityToken = LocalStorage.get(LOCAL_STORAGE_KEY_PRIVATE_CONFIG_AUTHENTICITY_TOKEN);
-  if (authenticityToken === null || !(typeof authenticityToken === 'string' && authenticityToken.length > 0)) {
+  const csrfToken = LocalStorage.get(LOCAL_STORAGE_KEY_CSRF_TOKEN);
+  if (csrfToken === null || !(typeof csrfToken === 'string' && csrfToken.length > 0)) {
     // ログインしていない
     chrome.tabs.create({
       url: TWITTER_LOGIN_URL,
